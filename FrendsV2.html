@@ -66,6 +66,14 @@
             100% { transform: translateY(-50px); opacity: 0; }
         }
 
+        /* 픽셀 아트 이미지 선명하게 표시 */
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -o-crisp-edges;
+        }
+
         /* 게이지 바 스타일 */
         .bar-container {
             background: #E5E7EB;
@@ -161,7 +169,13 @@
         </div>
 
         <div class="relative mt-10">
-            <img id="pet-image" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='150px';" class="pet-bounce w-48 h-48 object-contain drop-shadow-lg" alt="Pet">
+            <img
+                    id="pet-image"
+                    src=""
+                    onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='150px';"
+                    class="pet-bounce pixel-art w-48 h-48 object-contain drop-shadow-lg"
+                    alt="Pet"
+            />
             <div id="poop-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
             <div id="pet-bubble" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg text-sm font-bold whitespace-nowrap opacity-0 transition-opacity">
                 배고파요...
