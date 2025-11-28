@@ -789,7 +789,14 @@
         showScreen('battle-select-screen');
     }
 
+    // ✅ 기존 showMyQr 전체를 이 버전으로 교체
     function showMyQr() {
+        // 1) 플레이어 정보가 없으면 안내
+        if (!gameState.player || !gameState.player.name) {
+            alert("먼저 번호와 펫 이름을 입력해서 게임을 시작해 주세요!");
+            return;
+        }
+
         const myData = {
             name: gameState.player.name,
             level: gameState.player.level,
@@ -798,26 +805,54 @@
         const dataStr = JSON.stringify(myData);
         const encodedData = btoa(dataStr);
 
-        // 배포 페이지 URL에 파라미터 추가
+        // 2) 상단에 선언된 BASE_PAGE_URL 사용 (이미 파일에 있음)
         const battleUrl = `${BASE_PAGE_URL}?battle=${encodedData}`;
+        console.log("[MY QR URL]", battleUrl);
 
+        // 3) 모달 엘리먼트 체크
         const modal = document.getElementById('my-qr-modal');
+        if (!modal) {
+            alert("QR 모달을 찾을 수 없어요 (my-qr-modal). HTML 구조를 다시 확인해 주세요.");
+            return;
+        }
         modal.classList.remove('hidden');
 
+        // 4) QR 박스 엘리먼트 체크
         const qrBox = document.getElementById('my-qr-box');
+        if (!qrBox) {
+            alert("QR 박스(my-qr-box)를 찾을 수 없어요.");
+            return;
+        }
         qrBox.innerHTML = '';
 
-        new QRCode(qrBox, {
-            text: battleUrl,
-            width: 200,
-            height: 200,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.L
-        });
+        // 5) QRCode 라이브러리 로드 여부 체크 + 에러 대비
+        try {
+            if (typeof QRCode === "undefined") {
+                console.error("QRCode 라이브러리가 로드되지 않았습니다.");
+                // 최후의 수단: URL 텍스트라도 노출
+                qrBox.innerHTML = `<div class="text-xs break-words">${battleUrl}</div>`;
+            } else {
+                new QRCode(qrBox, {
+                    text: battleUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.L
+                });
+            }
+        } catch (e) {
+            console.error("QR 생성 중 오류:", e);
+            qrBox.innerHTML = `<div class="text-xs break-words">${battleUrl}</div>`;
+        }
 
-        document.getElementById('my-qr-text').innerText = `Lv.${myData.level} ${myData.name}`;
+        // 6) 하단에 펫 정보 텍스트 표시
+        const textEl = document.getElementById('my-qr-text');
+        if (textEl) {
+            textEl.innerText = `Lv.${myData.level} ${myData.name}`;
+        }
     }
+
 
     function closeMyQrModal() {
         document.getElementById('my-qr-modal').classList.add('hidden');
