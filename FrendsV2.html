@@ -455,7 +455,7 @@
     const QUIZ_TIME_LIMIT = 10; // 초
     let quizTimeLeft = QUIZ_TIME_LIMIT;
     let quizTimerId = null;
-
+    
     // 한글 퀴즈 로컬 JSON 풀
     let koreanQuizPool = [];
     let koreanQuizLoaded = false;
@@ -863,42 +863,61 @@
             if (!koreanQuizLoaded) {
                 await loadKoreanQuiz();
             }
+
+            question = null;
+            correctAnswer = null;
+            wrongAnswers = [];
+
             if (koreanQuizPool && koreanQuizPool.length > 0) {
                 const idx = Math.floor(Math.random() * koreanQuizPool.length);
                 const item = koreanQuizPool[idx];
 
-                // 기본 포맷 가정:
-                // { question: "문제", choices: ["보기1","보기2","보기3","보기4"], answerIndex: 0 }
-                const qText = item.question || item.q || "";
-                const choices = item.choices || item.options || [];
+                // Koquiz.json 포맷에 맞게 읽기
+                // { type, prompt, promptExplain, choices, answerIndex, ... }
+                const choices = Array.isArray(item.choices) ? item.choices : [];
                 let answerIndex =
-                    (typeof item.answerIndex === "number" ? item.answerIndex :
-                        (typeof item.correctIndex === "number" ? item.correctIndex : 0));
+                    typeof item.answerIndex === "number" ? item.answerIndex : 0;
 
-                if (Array.isArray(choices) && choices.length >= 2) {
+                if (choices.length >= 2) {
                     if (answerIndex < 0 || answerIndex >= choices.length) {
                         answerIndex = 0;
                     }
-                    question = qText || "다음 중 알맞은 것을 고르세요.";
+
+                    const prompt = item.prompt || "";
+                    const explain = item.promptExplain || "";
+
+                    // type에 따라 질문 문장 구성
+                    if (item.type === "missing_letter") {
+                        // 예: "_교   (우리가 공부하러 가는 곳)"
+                        question = `${prompt}   (${explain})`;
+                    } else if (item.type === "spelling_choice") {
+                        // 예: "'학꾜'를 바르게 적은 것은?\n우리가 공부하러 가는 곳 이름이에요."
+                        question = `${prompt}\n${explain}`;
+                    } else {
+                        // 혹시 다른 타입이더라도 그냥 붙여서 보여주기
+                        question = `${prompt}\n${explain}`;
+                    }
+
                     correctAnswer = choices[answerIndex];
                     wrongAnswers = choices.filter((_, i) => i !== answerIndex);
                 }
             }
 
-            // 혹시 JSON이 비어있거나 형식이 맞지 않으면 간단한 예비 문제 사용
+            // ❗ JSON이 비었거나 형식이 완전 이상할 때만 예비 문제 사용
             if (!question) {
                 const words = [
-                    {q: '가방', c: '가방', w: ['가빵', '가방이', '가뱡']},
-                    {q: '학교', c: '학교', w: ['학꾜', '하교', '학굣']},
-                    {q: '친구', c: '친구', w: ['칟구', '칭구', '친구가']},
-                    {q: '연필', c: '연필', w: ['연필이', '년필', '연필ㅎ']},
-                    {q: '지우개', c: '지우개', w: ['지우게', '지우개가', '지우캬']}
+                    { q: '가방', c: '가방', w: ['가빵', '가방이', '가뱡'] },
+                    { q: '학교', c: '학교', w: ['학꾜', '하교', '학굣'] },
+                    { q: '친구', c: '친구', w: ['칟구', '칭구', '친구가'] },
+                    { q: '연필', c: '연필', w: ['연필이', '년필', '연필ㅎ'] },
+                    { q: '지우개', c: '지우개', w: ['지우게', '지우개가', '지우캬'] }
                 ];
                 const item = words[Math.floor(Math.random() * words.length)];
                 question = `바르게 쓴 것은 무엇일까요?\n(읽어 보고 골라요)`;
                 correctAnswer = item.c;
                 wrongAnswers = item.w;
             }
+
         } else {
             // 방어 코드: 이상한 타입이면 숫자 문제로 fallback
             const a = Math.floor(Math.random() * 10) + 1;
