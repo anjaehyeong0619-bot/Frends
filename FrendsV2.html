@@ -1164,24 +1164,25 @@
         }
     }
 
-    <!-- ✅ 내 펫 QR 모달 -->
-    <div id="my-qr-modal"
-         class="hidden fixed inset-0 bg-black bg-opacity-60 items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-4 w-72 text-center relative shadow-2xl border-4 border-purple-400">
-            <button
+</script>
+
+<!-- ✅ 내 펫 QR 모달 -->
+<div id="my-qr-modal"
+     class="hidden fixed inset-0 bg-black bg-opacity-60 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-4 w-72 text-center relative shadow-2xl border-4 border-purple-400">
+        <button
                 onclick="closeMyQrModal()"
                 class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl leading-none">
-                ✕
-            </button>
-            <h3 class="text-xl font-bold mb-2 text-purple-700">내 펫 QR</h3>
-            <p class="text-xs text-gray-600 mb-2">친구는 이 QR을 찍어서<br>나와 배틀할 수 있어요!</p>
+            ✕
+        </button>
+        <h3 class="text-xl font-bold mb-2 text-purple-700">내 펫 QR</h3>
+        <p class="text-xs text-gray-600 mb-2">친구는 이 QR을 찍어서<br>나와 배틀할 수 있어요!</p>
 
-            <div id="my-qr-box" class="bg-white p-2 rounded-xl flex items-center justify-center mb-2"></div>
+        <div id="my-qr-box" class="bg-white p-2 rounded-xl flex items-center justify-center mb-2"></div>
 
-            <div class="text-[10px] text-gray-500 break-words bg-gray-100 rounded-lg p-1" id="my-qr-text"></div>
-        </div>
+        <div class="text-[10px] text-gray-500 break-words bg-gray-100 rounded-lg p-1" id="my-qr-text"></div>
     </div>
+</div>
 
-</script>
 </body>
 </html>
