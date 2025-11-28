@@ -752,32 +752,72 @@
     }
 
     function handleQrPayload(data) {
-        try {
-            const obj = JSON.parse(data);
-            if (obj && obj.kind === 'pet-qr') {
-                enterBattleReady({
-                    name: obj.name || '친구',
-                    level: Number(obj.level) || 1,
-                    number: Number(obj.number) || 1
-                });
-                return;
-            }
-        } catch(e) {}
+        const raw = String(data || "").trim();
+        console.log("[QR RAW]", raw);
 
-        const parts = String(data).split(':');
-        if (parts.length >= 1) {
-            const num = parseInt(parts[0], 10);
-            if (!isNaN(num)) {
-                enterBattleReady({
-                    number: num,
-                    name: parts[1] || `친구 ${num}`,
-                    level: parseInt(parts[2]) || gameState.player.level
-                });
-                return;
+        // 1) JSON 형식 먼저 처리 (kind 없어도 number/num 있으면 인정)
+        try {
+            if (raw.startsWith("{") && raw.endsWith("}")) {
+                const obj = JSON.parse(raw);
+                if (obj && (obj.number != null || obj.num != null)) {
+                    const num = Number(obj.number ?? obj.num);
+                    if (!Number.isNaN(num) && num > 0) {
+                        const name = obj.name || `친구 ${num}`;
+                        const level =
+                            Number(obj.level) || gameState.player.level || 1;
+                        enterBattleReady({ number: num, name, level });
+                        return;
+                    }
+                }
             }
+        } catch (e) {
+            console.warn("QR JSON parse error", e);
         }
-        alert('알 수 없는 QR 코드입니다.');
+
+        // 2) URL 형식 처리: ?number=15 또는 ?n=15 같이 오는 경우
+        try {
+            if (/^https?:\/\//i.test(raw)) {
+                const url = new URL(raw);
+                const numStr =
+                    url.searchParams.get("number") ?? url.searchParams.get("n");
+                if (numStr) {
+                    const num = Number(numStr);
+                    if (!Number.isNaN(num) && num > 0) {
+                        const name =
+                            url.searchParams.get("name") || `친구 ${num}`;
+                        const level =
+                            Number(url.searchParams.get("level")) ||
+                            gameState.player.level ||
+                            1;
+                        enterBattleReady({ number: num, name, level });
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("QR URL parse error", e);
+        }
+
+        // 3) "pet-qr:..." 같은 prefix가 붙은 경우 잘라내기
+        let text = raw;
+        if (text.startsWith("pet-qr:")) {
+            text = text.slice("pet-qr:".length);
+        }
+
+        // 4) 콜론(:)으로 구분된 간단한 포맷: num[:name[:level]]
+        const parts = text.split(":");
+        const num = Number(parts[0]);
+        if (!Number.isNaN(num) && num > 0) {
+            const name = parts[1] || `친구 ${num}`;
+            const level =
+                Number(parts[2]) || gameState.player.level || 1;
+            enterBattleReady({ number: num, name, level });
+            return;
+        }
+
+        alert("알 수 없는 QR 코드입니다.\n\nQR 내용: " + raw);
     }
+
 
     function searchByNumber() {
         const input = document.getElementById('friend-code-input').value;
