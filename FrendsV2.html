@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>우리 학교 펫 키우기 V3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFFBEB;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .screen {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* 펫 이미지 애니메이션 */
+        .pet-bounce {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 콤보 이펙트 */
+        .combo-text {
+            position: absolute;
+            font-size: 2rem;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #000;
+            animation: popUp 0.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 50;
+        }
+        @keyframes popUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        /* 배틀 데미지 */
+        .damage-text {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #EF4444;
+            font-weight: bold;
+            animation: floatUp 1s forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        /* 게이지 바 스타일 */
+        .bar-container {
+            background: #E5E7EB;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 2px solid #374151;
+        }
+
+        /* 똥 이미지 */
+        .poop {
+            position: absolute;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .poop:active {
+            transform: scale(0.8);
+        }
+
+        /* 버튼 스타일 */
+        .game-btn {
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .game-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.2);
+        }
+
+        /* 파일 인풋 숨기기 (커스텀 버튼 연결용) */
+        #qr-file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div id="start-screen" class="screen active justify-center items-center bg-yellow-100 p-6">
+    <h1 class="text-4xl text-orange-500 mb-8 text-center drop-shadow-md">
+        <i class="fas fa-paw"></i> 우리 학교<br>펫 키우기 V3
+    </h1>
+    <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm text-center border-4 border-orange-300">
+        <p class="mb-4 text-xl">자기 번호를 입력해요!</p>
+        <input type="number" id="student-number" class="w-full text-center text-3xl p-3 border-b-4 border-orange-200 focus:outline-none mb-4 rounded-lg bg-orange-50" placeholder="번호 (예: 15)">
+        <p class="mb-2 text-lg">펫의 이름은?</p>
+        <input type="text" id="pet-name" class="w-full text-center text-2xl p-3 border-b-4 border-orange-200 focus:outline-none mb-6 rounded-lg bg-orange-50" placeholder="예: 멍멍이">
+
+        <button onclick="startGame()" class="game-btn w-full bg-orange-500 text-white text-2xl py-4 rounded-xl font-bold hover:bg-orange-600">
+            게임 시작!
+        </button>
+    </div>
+</div>
+
+<div id="main-screen" class="screen bg-sky-100 relative">
+    <div class="bg-white p-3 flex justify-between items-center shadow-md z-10">
+        <div class="flex items-center gap-2">
+            <span class="bg-yellow-400 text-white px-2 py-1 rounded-lg font-bold shadow-sm">Lv.<span id="ui-level">1</span></span>
+            <span id="ui-name" class="font-bold text-lg">이름</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center text-yellow-600">
+                <i class="fas fa-candy-cane mr-1"></i> <span id="ui-candy">0</span>
+            </div>
+            <button onclick="openSettings()" class="text-gray-400"><i class="fas fa-cog"></i></button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col justify-center items-center relative w-full">
+
+        <div class="absolute top-4 w-3/4 max-w-md">
+            <div class="flex justify-between text-sm mb-1 font-bold text-blue-600">
+                <span>성장 경험치</span>
+                <span id="ui-exp-text">0/20</span>
+            </div>
+            <div class="bar-container h-4">
+                <div id="ui-exp-bar" class="bg-blue-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="absolute top-16 w-full px-8 flex justify-between">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-drumstick-bite text-orange-500 text-xl mb-1"></i>
+                <div class="bar-container w-24 h-3 bg-white">
+                    <div id="ui-hunger-bar" class="bg-orange-400 h-full transition-all duration-500" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-sparkles text-blue-400 text-xl mb-1"></i>
+                <div class="bar-container w-24 h-3 bg-white">
+                    <div id="ui-clean-bar" class="bg-blue-300 h-full transition-all duration-500" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative mt-10">
+            <img id="pet-image" src="./png/pet_1.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='150px';" class="pet-bounce w-48 h-48 object-contain drop-shadow-lg" alt="Pet">
+            <div id="poop-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+            <div id="pet-bubble" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg text-sm font-bold whitespace-nowrap opacity-0 transition-opacity">
+                배고파요...
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-t-3xl shadow-[0_-5px_15px_rgba(0,0,0,0.1)]">
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <button onclick="feedPet()" class="game-btn bg-orange-100 hover:bg-orange-200 py-4 rounded-xl flex flex-col items-center gap-1 border-b-4 border-orange-300">
+                <i class="fas fa-utensils text-2xl text-orange-600"></i>
+                <span class="font-bold text-orange-800">밥 주기</span>
+                <span class="text-xs text-orange-600">(사탕 3개)</span>
+            </button>
+            <button onclick="cleanPoop()" class="game-btn bg-blue-100 hover:bg-blue-200 py-4 rounded-xl flex flex-col items-center gap-1 border-b-4 border-blue-300">
+                <i class="fas fa-broom text-2xl text-blue-600"></i>
+                <span class="font-bold text-blue-800">똥 치우기</span>
+            </button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="goToQuizSelect()" class="game-btn bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl font-bold text-xl border-b-4 border-green-700">
+                <i class="fas fa-book-open mb-1"></i> 공부하기
+            </button>
+            <button onclick="goToBattleSetup()" class="game-btn bg-purple-500 hover:bg-purple-600 text-white py-4 rounded-xl font-bold text-xl border-b-4 border-purple-700">
+                <i class="fas fa-gamepad mb-1"></i> 배틀하기
+            </button>
+        </div>
+        <button onclick="goToCollection()" class="w-full mt-3 py-2 text-gray-500 font-bold bg-gray-100 rounded-lg text-sm">
+            <i class="fas fa-book"></i> 친구 도감 보기
+        </button>
+    </div>
+</div>
+
+<div id="quiz-select-screen" class="screen bg-green-100 p-6 items-center justify-center">
+    <h2 class="text-3xl font-bold text-green-700 mb-8">무슨 공부를 할까?</h2>
+    <div class="flex flex-col gap-4 w-full max-w-sm">
+        <button onclick="startQuiz('math')" class="game-btn bg-blue-500 text-white text-2xl py-6 rounded-2xl font-bold border-b-4 border-blue-700">
+            <i class="fas fa-calculator mr-2"></i> 수학 퀴즈
+        </button>
+        <button onclick="startQuiz('korean')" class="game-btn bg-pink-500 text-white text-2xl py-6 rounded-2xl font-bold border-b-4 border-pink-700">
+            <i class="fas fa-font mr-2"></i> 국어 퀴즈
+        </button>
+        <button onclick="goHome()" class="mt-4 text-gray-500 underline font-bold">집으로 가기</button>
+    </div>
+</div>
+
+<div id="quiz-play-screen" class="screen bg-white p-6 flex-col items-center">
+    <div class="w-full flex justify-between items-center mb-6">
+        <div class="text-xl font-bold text-gray-600"><span id="quiz-combo">0</span> 콤보! 🔥</div>
+        <div class="w-1/2 bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-400">
+            <div id="timer-bar" class="bg-red-500 h-full w-full"></div>
+        </div>
+    </div>
+    <div class="flex-1 flex flex-col items-center justify-center w-full">
+        <div id="quiz-question" class="text-6xl font-bold mb-12 text-gray-800 text-center">
+            5 + 3 = ?
+        </div>
+        <div id="quiz-options" class="grid grid-cols-2 gap-4 w-full">
+        </div>
+    </div>
+    <div id="quiz-feedback" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl opacity-0 pointer-events-none" style="text-shadow: 4px 4px 0 #fff;">
+        ⭕
+    </div>
+    <button onclick="endQuiz()" class="mt-8 text-gray-400 font-bold border px-4 py-2 rounded-lg">그만하기</button>
+</div>
+
+<div id="battle-setup-screen" class="screen bg-purple-900 text-white p-6 items-center justify-center">
+    <h2 class="text-3xl font-bold mb-4">친구 찾기</h2>
+    <div class="bg-purple-800 p-6 rounded-2xl w-full max-w-sm text-center border-4 border-purple-600 mb-6">
+        <i class="fas fa-qrcode text-9xl mb-4 text-white opacity-80"></i>
+        <p class="mb-4">친구의 QR코드를 찍어요!<br>(또는 친구 번호를 입력해요)</p>
+
+        <input type="file" id="qr-file-input" accept="image/*" capture="environment" onchange="scanQrImage()">
+
+        <input type="number" id="friend-code-input" class="w-full text-black text-center text-xl p-3 rounded-lg mb-4" placeholder="친구 번호">
+
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="document.getElementById('qr-file-input').click()" class="game-btn bg-green-500 py-3 rounded-lg font-bold border-b-4 border-green-700">
+                <i class="fas fa-camera"></i> QR 찍기
+            </button>
+            <button onclick="searchByNumber()" class="game-btn bg-blue-500 py-3 rounded-lg font-bold border-b-4 border-blue-700">
+                번호 검색
+            </button>
+        </div>
+        <button onclick="randomBattle()" class="w-full mt-2 game-btn bg-yellow-500 py-3 rounded-lg font-bold border-b-4 border-yellow-700 text-black">
+            아무나 대결 (랜덤)
+        </button>
+    </div>
+    <button onclick="goHome()" class="text-gray-300 underline">돌아가기</button>
+</div>
+
+<div id="battle-ready-screen" class="screen bg-purple-900 text-white p-6 items-center justify-center">
+    <div class="w-full max-w-md bg-purple-800 rounded-2xl border-4 border-purple-600 p-5 shadow-2xl">
+        <h2 class="text-2xl font-bold mb-6 text-center text-yellow-400">대결 상대를 찾았어요!</h2>
+
+        <div class="flex justify-around items-center mb-6">
+            <div class="flex flex-col items-center">
+                <div class="text-sm mb-1 text-purple-200">나</div>
+                <img id="ready-my-img" src="" class="w-20 h-20 object-contain mb-1 bg-white rounded-full border-2 border-purple-400 p-1">
+                <span class="bg-blue-500 px-2 rounded-full text-xs mb-1">Lv.<span id="ready-my-level">1</span></span>
+                <div id="ready-my-name" class="font-bold">내 이름</div>
+            </div>
+
+            <div class="text-3xl font-black text-red-400 italic">VS</div>
+
+            <div class="flex flex-col items-center">
+                <div class="text-sm mb-1 text-purple-200">상대</div>
+                <img id="ready-enemy-img" src="" class="w-20 h-20 object-contain mb-1 bg-white rounded-full border-2 border-red-400 p-1">
+                <span class="bg-red-500 px-2 rounded-full text-xs mb-1">Lv.<span id="ready-enemy-level">?</span></span>
+                <div id="ready-enemy-name" class="font-bold">상대 이름</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="confirmBattle()" class="game-btn bg-yellow-400 text-black py-4 rounded-xl font-bold border-b-4 border-yellow-600 text-lg">
+                싸운다!
+            </button>
+            <button onclick="goToBattleSetup()" class="game-btn bg-gray-500 text-white py-4 rounded-xl font-bold border-b-4 border-gray-700 text-lg">
+                도망가기
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="battle-screen" class="screen bg-gray-800 relative overflow-hidden">
+    <div class="absolute w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
+
+    <div class="flex flex-col items-center mt-8 z-10">
+        <div class="flex items-center gap-2 text-white mb-1">
+            <span class="bg-red-500 px-2 rounded font-bold text-sm">Lv.<span id="enemy-level">?</span></span>
+            <span id="enemy-name" class="font-bold text-lg">친구 펫</span>
+        </div>
+        <div class="bar-container w-48 h-4 bg-gray-700">
+            <div id="enemy-hp-bar" class="bg-red-500 h-full transition-all duration-300" style="width: 100%"></div>
+        </div>
+        <img id="enemy-pet-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='100px';" class="w-32 h-32 mt-4 object-contain transition-transform duration-100" alt="Enemy">
+    </div>
+
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+        <span class="text-6xl font-black text-yellow-500 italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">VS</span>
+    </div>
+
+    <div class="flex flex-col items-center mb-8 mt-auto z-10">
+        <img id="my-battle-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='100px';" class="w-32 h-32 mb-4 object-contain transition-transform duration-100" alt="Me">
+        <div class="bar-container w-48 h-4 bg-gray-700">
+            <div id="my-hp-bar" class="bg-green-500 h-full transition-all duration-300" style="width: 100%"></div>
+        </div>
+        <div class="flex items-center gap-2 text-white mt-1">
+            <span class="bg-blue-500 px-2 rounded font-bold text-sm">Lv.<span id="my-battle-level">?</span></span>
+            <span id="my-battle-name" class="font-bold text-lg">내 펫</span>
+        </div>
+    </div>
+
+    <div id="battle-message" class="absolute bottom-1/2 transform translate-y-16 w-full text-center text-white text-xl font-bold drop-shadow-md z-30 opacity-0 transition-opacity">
+        전투 시작!
+    </div>
+
+    <button onclick="skipBattle()" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm z-50">결과 보기 >></button>
+</div>
+
+<div id="battle-result-screen" class="screen bg-black bg-opacity-90 absolute top-0 left-0 w-full h-full z-50 justify-center items-center text-white text-center">
+    <h2 id="result-title" class="text-5xl font-bold mb-4 text-yellow-400">승리!</h2>
+    <div id="result-reward" class="mb-8 text-xl">
+        <p>사탕 +3개</p>
+        <p>경험치 +10</p>
+    </div>
+    <button onclick="finishBattle()" class="game-btn bg-white text-black px-8 py-3 rounded-xl font-bold text-xl">
+        집으로
+    </button>
+</div>
+
+<div id="collection-screen" class="screen bg-indigo-50 p-6 flex-col">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-indigo-800">친구 도감</h2>
+        <button onclick="goHome()" class="bg-gray-300 px-3 py-1 rounded font-bold text-gray-700">닫기</button>
+    </div>
+    <div id="collection-list" class="grid grid-cols-2 gap-4 overflow-y-auto pb-4">
+    </div>
+</div>
+
+<script>
+    /* --- 1. 게임 데이터 및 상태 관리 --- */
+    let gameState = {
+        player: {
+            number: 0,
+            name: "",
+            level: 1,
+            exp: 0,
+            maxHp: 30,
+            attack: 5,
+            hunger: 100,
+            cleanliness: 100,
+            poops: 0,
+            candies: 5,
+            characterId: 1
+        },
+        collection: [],
+        lastTickTime: Date.now()
+    };
+
+    const LEVEL_EXP_BASE = 20;
+    const LEVEL_EXP_INC = 5;
+
+    window.onload = function() {
+        loadGame();
+    };
+
+    function saveGame() {
+        gameState.lastTickTime = Date.now();
+        localStorage.setItem('myPetSchoolDataV3', JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+        const data = localStorage.getItem('myPetSchoolDataV3');
+        if (data) {
+            const parsed = JSON.parse(data);
+            gameState = { ...gameState, ...parsed, player: { ...gameState.player, ...parsed.player } };
+            calculateOfflineProgress();
+
+            if (gameState.player.name) {
+                showScreen('main-screen');
+                startGameLoop();
+            } else {
+                showScreen('start-screen');
+            }
+        } else {
+            showScreen('start-screen');
+        }
+        updateUI();
+    }
+
+    function calculateOfflineProgress() {
+        const now = Date.now();
+        const diffMs = now - gameState.lastTickTime;
+        const diffMinutes = Math.floor(diffMs / 60000);
+
+        if (diffMinutes > 0) {
+            const hungerDrop = Math.floor(diffMinutes / 30) * 10;
+            gameState.player.hunger = Math.max(0, gameState.player.hunger - hungerDrop);
+
+            const hours = Math.floor(diffMinutes / 60);
+            if (hours > 0) {
+                gameState.player.cleanliness = Math.max(0, gameState.player.cleanliness - (hours * 10));
+                for(let i=0; i<hours; i++) {
+                    if(Math.random() > 0.5 && gameState.player.poops < 3) {
+                        gameState.player.poops++;
+                    }
+                }
+            }
+        }
+        gameState.lastTickTime = now;
+    }
+
+    function startGame() {
+        const num = document.getElementById('student-number').value;
+        const name = document.getElementById('pet-name').value;
+
+        if (!num || !name) {
+            alert('번호와 이름을 모두 적어주세요!');
+            return;
+        }
+
+        gameState.player.number = Number(num);
+        gameState.player.name = name;
+        gameState.player.characterId = (Number(num) % 5) + 1; // V1 로직 유지: 1~5번 이미지 반복
+
+        saveGame();
+        showScreen('main-screen');
+        startGameLoop();
+        updateUI();
+    }
+
+    /* --- 2. 메인 게임 루프 & UI --- */
+    let gameInterval;
+
+    function startGameLoop() {
+        if(gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(() => {
+            const now = Date.now();
+            if (now - gameState.lastTickTime > 60000) {
+                calculateOfflineProgress();
+                saveGame();
+                updateUI();
+            }
+        }, 10000);
+        renderPoops();
+    }
+
+    function updateUI() {
+        const p = gameState.player;
+        document.getElementById('ui-level').innerText = p.level;
+        document.getElementById('ui-name').innerText = p.name;
+        document.getElementById('ui-candy').innerText = p.candies;
+
+        const reqExp = LEVEL_EXP_BASE + (p.level - 1) * LEVEL_EXP_INC;
+        const expPct = (p.exp / reqExp) * 100;
+        document.getElementById('ui-exp-bar').style.width = `${expPct}%`;
+        document.getElementById('ui-exp-text').innerText = `${p.exp}/${reqExp}`;
+
+        document.getElementById('ui-hunger-bar').style.width = `${p.hunger}%`;
+        document.getElementById('ui-clean-bar').style.width = `${p.cleanliness}%`;
+
+        // 메인 이미지 업데이트 (V1 스타일)
+        // 실제로는 player.characterId에 맞는 이미지가 필요하지만 여기선 예시로 pet_1.png 유지 혹은 교체
+        const imgEl = document.getElementById('pet-image');
+        // imgEl.src = `./png/pet_${p.characterId}.png`; 
+
+        const bubble = document.getElementById('pet-bubble');
+        if (p.hunger < 30) {
+            bubble.innerText = "배고파요...";
+            bubble.style.opacity = 1;
+        } else if (p.cleanliness < 30 || p.poops > 0) {
+            bubble.innerText = "냄새나요...";
+            bubble.style.opacity = 1;
+        } else {
+            bubble.style.opacity = 0;
+        }
+    }
+
+    function renderPoops() {
+        const container = document.getElementById('poop-container');
+        container.innerHTML = '';
+        for(let i=0; i<gameState.player.poops; i++) {
+            const poop = document.createElement('div');
+            poop.className = 'poop';
+            poop.innerText = '💩';
+            poop.style.left = `${20 + (i*25)}%`;
+            poop.style.bottom = '10%';
+            poop.onclick = (e) => {
+                e.stopPropagation();
+                cleanPoop();
+            };
+            container.appendChild(poop);
+        }
+    }
+
+    /* --- 3. 펫 관리 액션 --- */
+    function feedPet() {
+        if (gameState.player.candies < 3) {
+            alert('사탕이 부족해요! 공부나 배틀을 해서 사탕을 모아요.');
+            return;
+        }
+        if (gameState.player.hunger >= 100) {
+            alert('배가 불러요!');
+            return;
+        }
+        gameState.player.candies -= 3;
+        gameState.player.hunger = Math.min(100, gameState.player.hunger + 40);
+        if(Math.random() < 0.1) {
+            addExp(5);
+            alert('맛있게 먹고 쑥쑥 컸어요! (+5 EXP)');
+        }
+        saveGame();
+        updateUI();
+
+        const img = document.getElementById('pet-image');
+        img.style.transform = "scale(1.2)";
+        setTimeout(() => img.style.transform = "scale(1)", 200);
+    }
+
+    function cleanPoop() {
+        if (gameState.player.poops === 0 && gameState.player.cleanliness >= 90) {
+            alert('이미 깨끗해요!');
+            return;
+        }
+        if (gameState.player.poops > 0) {
+            gameState.player.poops = 0;
+            addExp(2);
+        }
+        gameState.player.cleanliness = 100;
+        saveGame();
+        updateUI();
+        renderPoops();
+    }
+
+    function addExp(amount) {
+        gameState.player.exp += amount;
+        const reqExp = LEVEL_EXP_BASE + (gameState.player.level - 1) * LEVEL_EXP_INC;
+        if (gameState.player.exp >= reqExp) {
+            gameState.player.level++;
+            gameState.player.exp -= reqExp;
+            gameState.player.maxHp += 2;
+            gameState.player.attack += 1;
+            alert(`레벨 업! Lv.${gameState.player.level} 이 되었어요!`);
+        }
+    }
+
+    /* --- 4. 퀴즈 시스템 (V1 로직 사용) --- */
+    let quizTimer, currentSubject = '', combo = 0, timeLeft = 10;
+
+    function goToQuizSelect() { showScreen('quiz-select-screen'); }
+
+    function startQuiz(subject) {
+        currentSubject = subject;
+        combo = 0;
+        document.getElementById('quiz-combo').innerText = 0;
+        showScreen('quiz-play-screen');
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        timeLeft = 10;
+        updateTimerBar();
+        if(quizTimer) clearInterval(quizTimer);
+        quizTimer = setInterval(() => {
+            timeLeft -= 0.1;
+            updateTimerBar();
+            if (timeLeft <= 0) handleWrong();
+        }, 100);
+        generateQuestion();
+    }
+
+    function updateTimerBar() {
+        const pct = (timeLeft / 10) * 100;
+        document.getElementById('timer-bar').style.width = `${pct}%`;
+    }
+
+    function generateQuestion() {
+        const container = document.getElementById('quiz-options');
+        container.innerHTML = '';
+        const qDiv = document.getElementById('quiz-question');
+        let questionText = "", answer = 0, options = [];
+
+        if (currentSubject === 'math') {
+            const a = Math.floor(Math.random() * 9) + 1;
+            const b = Math.floor(Math.random() * 9) + 1;
+            if (Math.random() > 0.5) {
+                questionText = `${a} + ${b} = ?`;
+                answer = a + b;
+            } else {
+                const max = Math.max(a, b), min = Math.min(a, b);
+                questionText = `${max} - ${min} = ?`;
+                answer = max - min;
+            }
+            options = [answer, answer + 1, answer - 1, answer + 2];
+        } else {
+            const vocab = [
+                {q: '사과', w: ['사과', '서과', '사가', '시과']},
+                {q: '학교', w: ['학교', '하교', '학고', '핫교']},
+                {q: '친구', w: ['친구', '진구', '친두', '천구']},
+                {q: '선생님', w: ['선생님', '성생님', '선샌님', '선상님']}
+            ];
+            const item = vocab[Math.floor(Math.random() * vocab.length)];
+            questionText = `"${item.q}"`;
+            answer = item.q;
+            options = item.w;
+        }
+
+        options.sort(() => Math.random() - 0.5);
+        options = [...new Set(options)]; // 중복제거
+        while(options.length < 4) options.push(currentSubject==='math'?options[0]+1:'오답');
+
+        qDiv.innerText = questionText;
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "bg-blue-100 hover:bg-blue-200 text-2xl font-bold py-8 rounded-xl border-b-4 border-blue-300 w-full h-full";
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, answer);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct) {
+        clearInterval(quizTimer);
+        if (String(selected) === String(correct)) {
+            combo++;
+            showFeedback("⭕");
+            let expGain = 5 + (combo > 1 ? combo : 0);
+            addExp(expGain);
+            if (combo % 3 === 0) gameState.player.candies++;
+            document.getElementById('quiz-combo').innerText = combo;
+            setTimeout(nextQuestion, 800);
+        } else {
+            handleWrong();
+        }
+        saveGame();
+    }
+
+    function handleWrong() {
+        showFeedback("❌");
+        combo = 0;
+        document.getElementById('quiz-combo').innerText = 0;
+        setTimeout(nextQuestion, 1000);
+    }
+
+    function showFeedback(emoji) {
+        const el = document.getElementById('quiz-feedback');
+        el.innerText = emoji;
+        el.style.opacity = 1;
+        setTimeout(() => { el.style.opacity = 0; }, 500);
+    }
+
+    function endQuiz() {
+        clearInterval(quizTimer);
+        showScreen('main-screen');
+        updateUI();
+    }
+
+    /* --- 5. 배틀 시스템 (V2의 QR/준비 로직 + V1의 연출) --- */
+    let battleState = { me: {}, enemy: {}, plan: [], turn: 0, isWin: false, pendingEnemy: null };
+
+    function goToBattleSetup() {
+        showScreen('battle-setup-screen');
+    }
+
+    // 5-1. QR 스캔 로직 (V2에서 가져옴)
+    function scanQrImage() {
+        const fileInput = document.getElementById('qr-file-input');
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (code) {
+                    handleQrPayload(code.data);
+                } else {
+                    alert('QR 코드를 인식하지 못했어요. 다시 찍어주세요.');
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function handleQrPayload(data) {
+        // V2와 동일한 파싱 로직
+        try {
+            const obj = JSON.parse(data);
+            if (obj && obj.kind === 'pet-qr') {
+                enterBattleReady({
+                    name: obj.name || '친구',
+                    level: Number(obj.level) || 1,
+                    number: Number(obj.number) || 1
+                });
+                return;
+            }
+        } catch(e) {}
+
+        const parts = String(data).split(':');
+        if (parts.length >= 1) {
+            const num = parseInt(parts[0], 10);
+            if (!isNaN(num)) {
+                enterBattleReady({
+                    number: num,
+                    name: parts[1] || `친구 ${num}`,
+                    level: parseInt(parts[2]) || gameState.player.level
+                });
+                return;
+            }
+        }
+        alert('알 수 없는 QR 코드입니다.');
+    }
+
+    function searchByNumber() {
+        const input = document.getElementById('friend-code-input').value;
+        if(!input) { alert('번호를 입력해주세요.'); return; }
+        // 시뮬레이션: 해당 번호의 친구 생성
+        const lvl = Math.max(1, gameState.player.level + (Math.floor(Math.random()*5)-2));
+        enterBattleReady({
+            number: Number(input),
+            name: `친구 ${input}`,
+            level: lvl
+        });
+    }
+
+    function randomBattle() {
+        const lvl = Math.max(1, gameState.player.level + (Math.floor(Math.random()*5)-2));
+        enterBattleReady({
+            number: 999,
+            name: "야생의 펫",
+            level: lvl
+        });
+    }
+
+    // 5-2. 배틀 대기 화면 (Ready Screen)
+    function enterBattleReady(enemyData) {
+        battleState.pendingEnemy = enemyData;
+
+        // UI 업데이트
+        document.getElementById('ready-my-name').innerText = gameState.player.name;
+        document.getElementById('ready-my-level').innerText = gameState.player.level;
+        document.getElementById('ready-my-img').src = `./png/pet_${gameState.player.characterId}.png`;
+        // 에러 시 대체 이미지
+        document.getElementById('ready-my-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; };
+
+        document.getElementById('ready-enemy-name').innerText = enemyData.name;
+        document.getElementById('ready-enemy-level').innerText = enemyData.level;
+
+        // 적 이미지는 번호에 따라 결정 (999는 야생)
+        let enemyImgNum = enemyData.number === 999 ? 2 : (enemyData.number % 5) + 1;
+        document.getElementById('ready-enemy-img').src = `./png/pet_${enemyImgNum}.png`;
+        document.getElementById('ready-enemy-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; };
+
+        showScreen('battle-ready-screen');
+    }
+
+    function confirmBattle() {
+        if(!battleState.pendingEnemy) return;
+        startBattle(battleState.pendingEnemy);
+    }
+
+    // 5-3. 실제 배틀 시작 (V1의 연출 + V2의 데이터)
+    function startBattle(enemyData) {
+        const myStats = {
+            name: gameState.player.name,
+            hp: gameState.player.maxHp,
+            maxHp: gameState.player.maxHp,
+            level: gameState.player.level
+        };
+
+        const enemyMaxHp = 30 + (enemyData.level - 1) * 2;
+        const enemyStats = {
+            name: enemyData.name,
+            hp: enemyMaxHp,
+            maxHp: enemyMaxHp,
+            level: enemyData.level,
+            number: enemyData.number
+        };
+
+        battleState = {
+            me: myStats,
+            enemy: enemyStats,
+            turn: 0,
+            isWin: false,
+            pendingEnemy: null
+        };
+
+        // 승패 로직 (V1)
+        const levelDiff = myStats.level - enemyStats.level;
+        let winChance = 0.5 + (levelDiff * 0.1);
+        winChance = Math.max(0.1, Math.min(0.9, winChance));
+        battleState.isWin = Math.random() < winChance;
+
+        let turns = 5;
+        if (Math.abs(levelDiff) >= 3) turns = 3;
+
+        battleState.plan = generateBattlePlan(myStats, enemyStats, battleState.isWin, turns);
+
+        // UI 세팅
+        document.getElementById('my-battle-level').innerText = myStats.level;
+        document.getElementById('my-battle-name').innerText = myStats.name;
+        document.getElementById('enemy-level').innerText = enemyStats.level;
+        document.getElementById('enemy-name').innerText = enemyStats.name;
+
+        // 이미지
+        document.getElementById('my-battle-img').src = document.getElementById('ready-my-img').src;
+        document.getElementById('enemy-pet-img').src = document.getElementById('ready-enemy-img').src;
+
+        document.getElementById('my-hp-bar').style.width = '100%';
+        document.getElementById('enemy-hp-bar').style.width = '100%';
+        document.getElementById('battle-result-screen').style.display = 'none';
+
+        showScreen('battle-screen');
+        setTimeout(playNextTurn, 1000);
+    }
+
+    function generateBattlePlan(me, enemy, iWin, turns) {
+        // V1의 단순 연출용 플랜 생성기 사용
+        let plan = [];
+        let currentMyHp = me.maxHp;
+        let currentEnemyHp = enemy.maxHp;
+        let targetMyHp, targetEnemyHp;
+
+        if (iWin) {
+            targetEnemyHp = 0;
+            targetMyHp = Math.floor(me.maxHp * (0.2 + Math.random() * 0.6));
+        } else {
+            targetMyHp = 0;
+            targetEnemyHp = Math.floor(enemy.maxHp * (0.2 + Math.random() * 0.6));
+        }
+
+        const totalDmgToEnemy = enemy.maxHp - targetEnemyHp;
+        const totalDmgToMe = me.maxHp - targetMyHp;
+        let dmgToEnemyPerTurn = Math.floor(totalDmgToEnemy / Math.ceil(turns/2));
+        let dmgToMePerTurn = Math.floor(totalDmgToMe / Math.floor(turns/2));
+
+        let isMyTurn = true;
+        for(let i=0; i<turns; i++) {
+            if (isMyTurn) {
+                let dmg = dmgToEnemyPerTurn + Math.floor(Math.random()*2);
+                if (currentEnemyHp - dmg < 0) dmg = currentEnemyHp;
+                if (i === turns-1 && iWin) dmg = currentEnemyHp;
+                currentEnemyHp -= dmg;
+                plan.push({ attacker: 'me', damage: dmg, remainingEnemyHp: currentEnemyHp, remainingMyHp: currentMyHp });
+            } else {
+                let dmg = dmgToMePerTurn + Math.floor(Math.random()*2);
+                if (currentMyHp - dmg < 0) dmg = currentMyHp;
+                if (i === turns-1 && !iWin) dmg = currentMyHp;
+                currentMyHp -= dmg;
+                plan.push({ attacker: 'enemy', damage: dmg, remainingEnemyHp: currentEnemyHp, remainingMyHp: currentMyHp });
+            }
+            isMyTurn = !isMyTurn;
+            if (currentEnemyHp <= 0 || currentMyHp <= 0) break;
+        }
+        return plan;
+    }
+
+    function playNextTurn() {
+        if (battleState.turn >= battleState.plan.length) {
+            showBattleResult();
+            return;
+        }
+
+        const action = battleState.plan[battleState.turn];
+        const msgEl = document.getElementById('battle-message');
+        const myImg = document.getElementById('my-battle-img');
+        const enemyImg = document.getElementById('enemy-pet-img');
+
+        if (action.attacker === 'me') {
+            msgEl.innerText = "나의 공격!";
+            myImg.style.transform = "translateX(50px) rotate(10deg)";
+            setTimeout(() => myImg.style.transform = "translateX(0)", 200);
+            setTimeout(() => {
+                enemyImg.style.opacity = 0.5;
+                setTimeout(() => enemyImg.style.opacity = 1, 100);
+                updateHpBars(action.remainingMyHp, battleState.me.maxHp, action.remainingEnemyHp, battleState.enemy.maxHp);
+                showDamage(action.damage, 'enemy');
+            }, 200);
+        } else {
+            msgEl.innerText = `${battleState.enemy.name}의 공격!`;
+            enemyImg.style.transform = "translateX(-50px) rotate(-10deg)";
+            setTimeout(() => enemyImg.style.transform = "translateX(0)", 200);
+            setTimeout(() => {
+                myImg.style.opacity = 0.5;
+                setTimeout(() => myImg.style.opacity = 1, 100);
+                updateHpBars(action.remainingMyHp, battleState.me.maxHp, action.remainingEnemyHp, battleState.enemy.maxHp);
+                showDamage(action.damage, 'me');
+            }, 200);
+        }
+
+        msgEl.style.opacity = 1;
+        setTimeout(() => msgEl.style.opacity = 0, 800);
+        battleState.turn++;
+        setTimeout(playNextTurn, 1500);
+    }
+
+    function showDamage(amount, target) {
+        const el = document.createElement('div');
+        el.className = 'damage-text';
+        el.innerText = `-${amount}`;
+        if (target === 'enemy') {
+            el.style.top = '20%';
+            el.style.left = '50%';
+        } else {
+            el.style.bottom = '20%';
+            el.style.left = '50%';
+        }
+        document.getElementById('battle-screen').appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+    }
+
+    function updateHpBars(myCur, myMax, enCur, enMax) {
+        document.getElementById('my-hp-bar').style.width = `${(myCur/myMax)*100}%`;
+        document.getElementById('enemy-hp-bar').style.width = `${(enCur/enMax)*100}%`;
+    }
+
+    function skipBattle() {
+        const last = battleState.plan[battleState.plan.length - 1];
+        updateHpBars(last.remainingMyHp, battleState.me.maxHp, last.remainingEnemyHp, battleState.enemy.maxHp);
+        battleState.turn = battleState.plan.length;
+        setTimeout(showBattleResult, 500);
+    }
+
+    function showBattleResult() {
+        const screen = document.getElementById('battle-result-screen');
+        screen.style.display = 'flex';
+        const title = document.getElementById('result-title');
+        const reward = document.getElementById('result-reward');
+
+        if (battleState.isWin) {
+            title.innerText = "승리!";
+            title.style.color = "#FBBF24";
+            reward.innerHTML = "<p>사탕 +3개</p><p>경험치 +10</p>";
+            gameState.player.candies += 3;
+            addExp(10);
+            addToCollection(battleState.enemy);
+        } else {
+            title.innerText = "아쉬워요...";
+            title.style.color = "#9CA3AF";
+            reward.innerHTML = "<p>위로금: 사탕 +1개</p>";
+            gameState.player.candies += 1;
+        }
+        saveGame();
+    }
+
+    function finishBattle() {
+        document.getElementById('battle-result-screen').style.display = 'none';
+        showScreen('main-screen');
+        updateUI();
+    }
+
+    /* --- 6. 도감 시스템 --- */
+    function addToCollection(enemy) {
+        const exists = gameState.collection.find(c => c.name === enemy.name);
+        if (!exists) {
+            gameState.collection.push({
+                name: enemy.name,
+                level: enemy.level,
+                number: enemy.number, // V3 추가: 번호 저장
+                date: new Date().toLocaleDateString()
+            });
+        }
+    }
+
+    function goToCollection() {
+        showScreen('collection-screen');
+        const list = document.getElementById('collection-list');
+        list.innerHTML = '';
+
+        if (gameState.collection.length === 0) {
+            list.innerHTML = '<div class="col-span-2 text-center text-gray-400 mt-10">아직 만난 친구가 없어요.<br>배틀을 해서 친구를 모아보세요!</div>';
+            return;
+        }
+
+        gameState.collection.forEach(friend => {
+            const el = document.createElement('div');
+            el.className = "bg-white p-3 rounded-xl shadow border border-indigo-100 flex flex-col items-center";
+            // 번호가 있으면 그에 맞는 이미지, 없으면 기본값
+            const imgId = friend.number ? ((friend.number % 5) + 1) : 2;
+
+            el.innerHTML = `
+                    <img src="./png/pet_${imgId}.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='60px';" class="w-16 h-16 object-contain mb-2">
+                    <div class="font-bold text-indigo-900">${friend.name}</div>
+                    <div class="text-sm text-gray-500">Lv.${friend.level}</div>
+                `;
+            list.appendChild(el);
+        });
+    }
+
+    /* --- 유틸리티 --- */
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+            s.style.display = 'none';
+        });
+        const target = document.getElementById(id);
+        target.classList.add('active');
+        target.style.display = 'flex';
+    }
+
+    function goHome() {
+        showScreen('main-screen');
+        updateUI();
+    }
+
+    function openSettings() {
+        if(confirm('처음부터 다시 할까요? (데이터가 모두 지워져요)')) {
+            localStorage.removeItem('myPetSchoolDataV3');
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
