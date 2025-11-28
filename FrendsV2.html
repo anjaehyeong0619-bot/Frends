@@ -360,7 +360,7 @@
             cleanliness: 100,
             poops: 0,
             candies: 5,
-            characterId: '01' // 기본값 문자열로 변경
+            characterId: '00' // 기본값 문자열로 변경
         },
         collection: [],
         lastTickTime: Date.now()
@@ -428,17 +428,20 @@
             return;
         }
 
-        gameState.player.number = Number(num);
+        const n = Math.max(0, Math.min(99, parseInt(num, 10) || 0)); // 0~99 제한
+
+        gameState.player.number = n;
         gameState.player.name = name;
-        // 캐릭터 ID를 1~5 범위의 두 자리 문자열로 설정 (예: '01', '02')
-        let charNum = (Number(num) % 5) + 1;
-        gameState.player.characterId = charNum.toString().padStart(2, '0');
+
+        // ✅ 학생 번호 그대로 두 자리로 → 0 → "00", 1 → "01", 12 → "12"
+        gameState.player.characterId = n.toString().padStart(2, "0");
 
         saveGame();
         showScreen('main-screen');
         startGameLoop();
         updateUI();
     }
+
 
     /* --- 2. 메인 게임 루프 & UI --- */
     let gameInterval;
@@ -767,8 +770,7 @@
         document.getElementById('ready-enemy-level').innerText = enemyData.level;
 
         // 적 이미지는 번호에 따라 결정 (999는 야생)
-        let enemyImgNum = enemyData.number === 999 ? 2 : (enemyData.number % 5) + 1;
-        let enemyImgId = enemyImgNum.toString().padStart(2, '0'); // 두 자리 ID로 변환
+        let enemyImgId = (enemyData.number || 0).toString().padStart(2, "0");
         document.getElementById('ready-enemy-img').src = `./png/${enemyImgId}.png`;
         document.getElementById('ready-enemy-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; };
 
@@ -997,8 +999,8 @@
             const el = document.createElement('div');
             el.className = "bg-white p-3 rounded-xl shadow border border-indigo-100 flex flex-col items-center";
             // 번호가 있으면 그에 맞는 이미지, 없으면 기본값
-            const imgNum = friend.number ? ((friend.number % 5) + 1) : 2;
-            const imgId = imgNum.toString().padStart(2, '0'); // 두 자리 ID로 변환
+            const imgId = (friend.number || 0).toString().padStart(2, "0");
+
 
             el.innerHTML = `
                     <img src="./png/${imgId}.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='60px';" class="w-16 h-16 object-contain mb-2">
