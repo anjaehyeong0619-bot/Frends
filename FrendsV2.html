@@ -662,7 +662,14 @@
     function startHungerTimer() {
         setInterval(() => {
             if (!gameState.player) return;
-            gameState.player.hunger = Math.max(0, (gameState.player.hunger ?? 0) - 1);
+            const prevHunger = gameState.player.hunger ?? 0;
+            gameState.player.hunger = Math.max(0, prevHunger - 1);
+
+            // ✅ 배고픔이 0이 되는 순간에만 패널티 적용
+            if (prevHunger > 0 && gameState.player.hunger === 0) {
+                applyCarePenalty("hunger");
+            }
+
             updateUI();
             saveGame();
         }, 5000);
@@ -674,6 +681,7 @@
             }
         }, 10000);
     }
+
 
     function feedPet() {
         const p = gameState.player;
@@ -706,11 +714,52 @@
             saveGame();
         };
         container.appendChild(poop);
+
+        const prevClean = gameState.player.cleanliness ?? 100;
         gameState.poopCount = (gameState.poopCount ?? 0) + 1;
-        gameState.player.cleanliness = Math.max(0, (gameState.player.cleanliness ?? 0) - 20);
+        gameState.player.cleanliness = Math.max(0, prevClean - 20);
+
+        // ✅ 청결이 0이 되는 순간에만 패널티 적용
+        if (prevClean > 0 && gameState.player.cleanliness === 0) {
+            applyCarePenalty("cleanliness");
+        }
+
         updateUI();
         saveGame();
     }
+
+
+    // ✅ 배고픔/청결 패널티: 0이 되는 순간 레벨 절반으로 감소
+    function applyCarePenalty(reason) {
+        const p = gameState.player;
+        if (!p) return;
+
+        const oldLevel = p.level ?? 1;
+        const newLevel = Math.max(1, Math.floor(oldLevel / 2));
+
+        if (newLevel >= oldLevel) {
+            // 이미 1레벨이거나 반으로 줄여도 변화 없으면 패널티 없음
+            return;
+        }
+
+        p.level = newLevel;
+        p.exp = 0; // 패널티 시 경험치는 0으로 리셋 (원하면 삭제 가능)
+
+        let msg = "";
+        if (reason === "hunger") {
+            msg = "배고픔이 0이 되어 펫이 너무 힘들어했어요.\n레벨이 절반으로 내려갑니다.";
+        } else if (reason === "cleanliness") {
+            msg = "청결이 0이 되어 펫이 너무 지저분해졌어요.\n레벨이 절반으로 내려갑니다.";
+        } else {
+            msg = "돌봄을 잘 못해 펫이 약해졌어요.\n레벨이 절반으로 내려갑니다.";
+        }
+
+        alert("⚠️ 돌봄 패널티!\n\n" + msg);
+
+        saveGame();
+        updateUI();
+    }
+
 
     function cleanPoop() {
         const poops = document.querySelectorAll('.poop');
