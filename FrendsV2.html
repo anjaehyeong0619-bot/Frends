@@ -778,16 +778,19 @@
     }
 
     function handleTimeUp() {
-        // 시간 초과: 오답 처리 + 콤보 초기화 후 다음 문제
+        // 시간 초과도 '틀린 것' 취급
         gameState.quiz.combo = 0;
-        alert('시간 초과! 다음 문제로 넘어가요.');
         const comboEl = document.getElementById('quiz-combo');
         if (comboEl) {
             comboEl.innerText = `연속: ${gameState.quiz.combo}`;
         }
+
+        alert('⏰ 시간 초과! 이번 문제를 틀려서 퀴즈를 종료합니다.');
+
         saveGame();
-        generateQuestion();
+        endQuiz();  // ❗ 다음 문제로 안 가고 바로 종료
     }
+
 
     /* --- 한글 퀴즈 로컬 JSON 로더 --- */
     async function loadKoreanQuiz() {
@@ -956,6 +959,7 @@
         const isCorrect = answer == correct;
 
         if (isCorrect) {
+            // ✅ 정답: 점수/콤보/사탕 + 다음 문제
             gameState.quiz.score += 10;
             gameState.quiz.combo++;
             gameState.player.candies += 1;
@@ -965,15 +969,21 @@
                 showComboEffect(gameState.quiz.combo);
                 gameState.player.candies += 2;
             }
-        } else {
-            gameState.quiz.combo = 0;
-            alert('아깝네요! 다시 도전해요.');
-        }
 
-        document.getElementById('quiz-score').innerText = `점수: ${gameState.quiz.score}`;
-        document.getElementById('quiz-combo').innerText = `연속: ${gameState.quiz.combo}`;
-        saveGame();
-        generateQuestion();
+            document.getElementById('quiz-score').innerText = `점수: ${gameState.quiz.score}`;
+            document.getElementById('quiz-combo').innerText = `연속: ${gameState.quiz.combo}`;
+            saveGame();
+            generateQuestion();   // 정답일 때만 계속 진행
+        } else {
+            // ❌ 오답: 그 자리에서 종료
+            gameState.quiz.combo = 0;
+            document.getElementById('quiz-combo').innerText = `연속: 0`;
+
+            alert('아깝네요! 한 번 틀려서 퀴즈를 종료합니다.');
+
+            saveGame();
+            endQuiz();  // 다음 문제 없이 바로 종료
+        }
     }
 
     function showComboEffect(combo) {
