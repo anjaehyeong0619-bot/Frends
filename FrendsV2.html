@@ -200,179 +200,163 @@
             <button onclick="goToQuizSelect()" class="game-btn bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl font-bold text-xl border-b-4 border-green-700">
                 <i class="fas fa-book-open mb-1"></i> 공부하기
             </button>
-            <button onclick="goToBattleSetup()" class="game-btn bg-purple-500 hover:bg-purple-600 text-white py-4 rounded-xl font-bold text-xl border-b-4 border-purple-700">
-                <i class="fas fa-gamepad mb-1"></i> 배틀하기
+            <button onclick="goToBattle()" class="game-btn bg-red-500 hover:bg-red-600 text-white py-4 rounded-xl font-bold text-xl border-b-4 border-red-700">
+                <i class="fas fa-duel mb-1"></i> 배틀!
             </button>
         </div>
-        <button onclick="goToCollection()" class="w-full mt-3 py-2 text-gray-500 font-bold bg-gray-100 rounded-lg text-sm">
-            <i class="fas fa-book"></i> 친구 도감 보기
+        <button onclick="goToCollection()" class="game-btn w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-bold text-xl mt-3 border-b-4 border-indigo-700">
+            <i class="fas fa-book mr-1"></i> 친구 도감
         </button>
     </div>
 </div>
 
-<div id="quiz-select-screen" class="screen bg-green-100 p-6 items-center justify-center">
-    <h2 class="text-3xl font-bold text-green-700 mb-8">무슨 공부를 할까?</h2>
-    <div class="flex flex-col gap-4 w-full max-w-sm">
-        <button onclick="startQuiz('math')" class="game-btn bg-blue-500 text-white text-2xl py-6 rounded-2xl font-bold border-b-4 border-blue-700">
-            <i class="fas fa-calculator mr-2"></i> 수학 퀴즈
-        </button>
-        <button onclick="startQuiz('korean')" class="game-btn bg-pink-500 text-white text-2xl py-6 rounded-2xl font-bold border-b-4 border-pink-700">
-            <i class="fas fa-font mr-2"></i> 국어 퀴즈
-        </button>
-        <button onclick="goHome()" class="mt-4 text-gray-500 underline font-bold">집으로 가기</button>
-    </div>
-</div>
-
-<div id="quiz-play-screen" class="screen bg-white p-6 flex-col items-center">
-    <div class="w-full flex justify-between items-center mb-6">
-        <div class="text-xl font-bold text-gray-600"><span id="quiz-combo">0</span> 콤보! 🔥</div>
-        <div class="w-1/2 bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-400">
-            <div id="timer-bar" class="bg-red-500 h-full w-full"></div>
-        </div>
-    </div>
-
-    <div class="flex-1 flex flex-col items-center justify-center w-full">
-        <div id="quiz-question" class="text-5xl font-bold mb-12 text-gray-800 text-center break-keep">
-            5 + 3 = ?
-        </div>
-
-        <div id="quiz-options" class="grid grid-cols-2 gap-4 w-full">
-        </div>
-    </div>
-
-    <div id="quiz-feedback" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl opacity-0 pointer-events-none" style="text-shadow: 4px 4px 0 #fff;">
-        ⭕
-    </div>
-
-    <button onclick="endQuiz()" class="mt-8 text-gray-400 font-bold border px-4 py-2 rounded-lg">그만하기</button>
-</div>
-
-<div id="battle-setup-screen" class="screen bg-purple-900 text-white p-6 items-center justify-center">
-    <h2 class="text-3xl font-bold mb-4">친구 찾기</h2>
-    <div class="bg-purple-800 p-6 rounded-2xl w-full max-w-sm text-center border-4 border-purple-600 mb-6">
-        <i class="fas fa-qrcode text-9xl mb-4 text-white opacity-80"></i>
-        <p class="mb-4">친구의 QR코드를 찍어요!<br>(또는 친구 번호를 입력해요)</p>
-
-        <input type="file" id="qr-file-input" accept="image/*" capture="environment" onchange="scanQrImage()">
-
-        <input type="number" id="friend-code-input" class="w-full text-black text-center text-xl p-3 rounded-lg mb-4" placeholder="친구 번호">
-
-        <div class="grid grid-cols-2 gap-2">
-            <button onclick="document.getElementById('qr-file-input').click()" class="game-btn bg-green-500 py-3 rounded-lg font-bold border-b-4 border-green-700">
-                <i class="fas fa-camera"></i> QR 찍기
+<div id="quiz-select-screen" class="screen bg-gradient-to-b from-green-100 to-green-50 items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+        <h2 class="text-3xl font-bold mb-6 text-center text-green-700">공부할 과목을 골라요!</h2>
+        <div class="grid gap-4">
+            <button onclick="startQuiz('number')" class="game-btn bg-blue-500 hover:bg-blue-600 text-white py-6 rounded-2xl text-2xl font-bold shadow-lg">
+                <i class="fas fa-calculator mr-2"></i> 숫자놀이
             </button>
-            <button onclick="searchByNumber()" class="game-btn bg-blue-500 py-3 rounded-lg font-bold border-b-4 border-blue-700">
-                번호 검색
+            <button onclick="startQuiz('korean')" class="game-btn bg-purple-500 hover:bg-purple-600 text-white py-6 rounded-2xl text-2xl font-bold shadow-lg">
+                <i class="fas fa-language mr-2"></i> 한글놀이
+            </button>
+            <button onclick="startQuiz('english')" class="game-btn bg-pink-500 hover:bg-pink-600 text-white py-6 rounded-2xl text-2xl font-bold shadow-lg">
+                <i class="fas fa-globe mr-2"></i> 영어놀이
             </button>
         </div>
-        <button onclick="randomBattle()" class="w-full mt-2 game-btn bg-yellow-500 py-3 rounded-lg font-bold border-b-4 border-yellow-700 text-black">
-            아무나 대결 (랜덤)
-        </button>
-        <!-- ✅ 새로 추가: 내 QR 보기 버튼 -->
-        <button onclick="openMyQrModal()" class="w-full mt-2 game-btn bg-white text-purple-700 py-3 rounded-lg font-bold border-b-4 border-purple-300">
-            <i class="fas fa-id-card"></i> 내 QR 보여주기
-        </button>
+        <button onclick="goHome()" class="mt-4 text-gray-500 text-lg">⬅ 돌아가기</button>
     </div>
-    <button onclick="goHome()" class="text-gray-300 underline">돌아가기</button>
 </div>
 
-<div id="battle-ready-screen" class="screen bg-purple-900 text-white p-6 items-center justify-center">
-    <div class="w-full max-w-md bg-purple-800 rounded-2xl border-4 border-purple-600 p-5 shadow-2xl">
-        <h2 class="text-2xl font-bold mb-6 text-center text-yellow-400">대결 상대를 찾았어요!</h2>
+<div id="quiz-screen" class="screen bg-gradient-to-b from-yellow-100 to-yellow-50 relative">
+    <div class="bg-white p-3 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <span id="quiz-combo" class="bg-green-500 text-white px-3 py-1 rounded-lg font-bold">연속: 0</span>
+            <span id="quiz-score" class="bg-blue-500 text-white px-3 py-1 rounded-lg font-bold">점수: 0</span>
+        </div>
+        <button onclick="endQuiz()" class="bg-red-400 text-white px-3 py-1 rounded-lg font-bold">끝내기</button>
+    </div>
+    <div class="flex-1 flex flex-col justify-center items-center p-6">
+        <h3 id="quiz-question" class="text-3xl font-bold text-gray-800 mb-8 text-center bg-white p-6 rounded-2xl shadow-lg border-4 border-yellow-300 min-w-[200px]">
+            문제 준비 중...
+        </h3>
+        <div id="quiz-answers" class="w-full max-w-md grid grid-cols-2 gap-4">
+        </div>
+    </div>
+</div>
 
-        <div class="flex justify-around items-center mb-6">
-            <div class="flex flex-col items-center">
-                <div class="text-sm mb-1 text-purple-200">나</div>
-                <img id="ready-my-img" src="" class="w-20 h-20 object-contain mb-1 bg-white rounded-full border-2 border-purple-400 p-1">
-                <span class="bg-blue-500 px-2 rounded-full text-xs mb-1">Lv.<span id="ready-my-level">1</span></span>
-                <div id="ready-my-name" class="font-bold">내 이름</div>
+<div id="battle-screen" class="screen bg-gradient-to-b from-red-100 to-orange-100 relative">
+    <div class="bg-white p-3 flex justify-between items-center shadow-md z-10">
+        <span class="text-lg font-bold text-red-700">⚔️ 배틀 ⚔️</span>
+        <button onclick="skipBattle()" class="bg-yellow-500 text-white px-3 py-1 rounded-lg font-bold text-sm">건너뛰기</button>
+    </div>
+    <div class="flex-1 p-4 flex flex-col justify-between">
+        <div class="text-center">
+            <div id="enemy-name" class="font-bold text-lg mb-2 text-red-700">상대편</div>
+            <div class="bar-container h-5 mb-2">
+                <div id="enemy-hp-bar" class="bg-red-400 h-full transition-all duration-500" style="width: 100%"></div>
             </div>
+            <img id="enemy-pet-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47e.png'; this.style.width='100px';" class="w-32 h-32 mx-auto object-contain" style="transition: all 0.2s">
+        </div>
+        <div id="battle-message" class="text-center text-2xl font-bold text-yellow-600 my-4" style="opacity:0; transition: opacity 0.3s">전투 시작!</div>
+        <div class="text-center">
+            <img id="my-battle-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='100px';" class="w-32 h-32 mx-auto object-contain mb-2" style="transition: all 0.2s">
+            <div class="bar-container h-5 mb-2">
+                <div id="my-hp-bar" class="bg-green-400 h-full transition-all duration-500" style="width: 100%"></div>
+            </div>
+            <div id="my-battle-name" class="font-bold text-lg text-blue-700">내 펫</div>
+        </div>
+    </div>
+    <div id="battle-result-screen" style="display:none" class="absolute inset-0 bg-black bg-opacity-75 flex-col items-center justify-center z-50">
+        <div class="bg-white rounded-3xl p-8 text-center shadow-2xl border-8 border-yellow-400">
+            <h2 id="result-title" class="text-4xl font-bold mb-4"></h2>
+            <div id="result-reward" class="text-xl mb-6"></div>
+            <button onclick="finishBattle()" class="game-btn bg-blue-500 text-white px-8 py-3 rounded-xl font-bold text-xl">확인</button>
+        </div>
+    </div>
+</div>
 
-            <div class="text-3xl font-black text-red-400 italic">VS</div>
+<div id="battle-select-screen" class="screen bg-gradient-to-b from-purple-100 to-pink-100 p-6">
+    <div class="w-full max-w-sm mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center text-purple-700">배틀하자! 💥</h2>
 
-            <div class="flex flex-col items-center">
-                <div class="text-sm mb-1 text-purple-200">상대</div>
-                <img id="ready-enemy-img" src="" class="w-20 h-20 object-contain mb-1 bg-white rounded-full border-2 border-red-400 p-1">
-                <span class="bg-red-500 px-2 rounded-full text-xs mb-1">Lv.<span id="ready-enemy-level">?</span></span>
-                <div id="ready-enemy-name" class="font-bold">상대 이름</div>
+        <button
+                onclick="showMyQr()"
+                class="game-btn w-full bg-purple-500 hover:bg-purple-600 text-white py-6 rounded-2xl text-2xl font-bold mb-4 border-b-4 border-purple-700">
+            <i class="fas fa-qrcode mr-2"></i> 내 QR 보여주기
+        </button>
+
+        <button
+                onclick="document.getElementById('qr-file-input').click()"
+                class="game-btn w-full bg-pink-500 hover:bg-pink-600 text-white py-6 rounded-2xl text-2xl font-bold mb-4 border-b-4 border-pink-700">
+            <i class="fas fa-camera mr-2"></i> QR 스캔하기
+        </button>
+
+        <input type="file" id="qr-file-input" accept="image/*" onchange="scanQRFromFile(event)">
+
+        <button onclick="goHome()" class="mt-4 text-gray-500 text-lg block text-center">⬅ 돌아가기</button>
+    </div>
+</div>
+
+<!-- ★ 새로 추가: VS 준비 화면 -->
+<div id="battle-ready-screen" class="screen bg-gradient-to-b from-red-50 to-yellow-50 p-6">
+    <div class="w-full max-w-md mx-auto flex flex-col items-center gap-4">
+        <h2 class="text-3xl font-bold text-red-600 mb-1">VS 준비!</h2>
+        <p class="text-sm text-gray-700 text-center mb-2">
+            아래 친구와 대결할까요?<br>준비가 되면 <span class="font-bold">"싸운다!"</span> 버튼을 눌러요.
+        </p>
+        <div class="w-full bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between">
+            <div class="flex flex-col items-center w-1/3">
+                <img id="ready-my-img"
+                     src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png"
+                     class="w-16 h-16 object-contain mb-1 pixel-art"
+                     alt="내 펫">
+                <div id="ready-my-name" class="font-bold text-blue-700 text-sm">나</div>
+                <div id="ready-my-level" class="text-xs text-gray-500">Lv.1</div>
+            </div>
+            <div class="text-3xl font-extrabold text-red-500">VS</div>
+            <div class="flex flex-col items-center w-1/3">
+                <img id="ready-enemy-img"
+                     src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png"
+                     class="w-16 h-16 object-contain mb-1 pixel-art"
+                     alt="상대 펫">
+                <div id="ready-enemy-name" class="font-bold text-red-700 text-sm">친구</div>
+                <div id="ready-enemy-level" class="text-xs text-gray-500">Lv.1</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="confirmBattle()" class="game-btn bg-yellow-400 text-black py-4 rounded-xl font-bold border-b-4 border-yellow-600 text-lg">
-                싸운다!
-            </button>
-            <button onclick="goToBattleSetup()" class="game-btn bg-gray-500 text-white py-4 rounded-xl font-bold border-b-4 border-gray-700 text-lg">
-                도망가기
-            </button>
-        </div>
+        <button
+                onclick="startBattleFromReady()"
+                class="game-btn w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl text-2xl font-bold border-b-4 border-red-700 mt-2">
+            ⚔️ 싸운다!
+        </button>
+        <button onclick="cancelBattleFromReady()" class="mt-2 text-gray-600 text-sm">
+            돌아가기
+        </button>
     </div>
 </div>
+<!-- ★ VS 준비 화면 끝 -->
 
-<div id="battle-screen" class="screen bg-gray-800 relative overflow-hidden">
-    <div class="absolute w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
-
-    <div class="flex flex-col items-center mt-8 z-10">
-        <div class="flex items-center gap-2 text-white mb-1">
-            <span class="bg-red-500 px-2 rounded font-bold text-sm">Lv.<span id="enemy-level">?</span></span>
-            <span id="enemy-name" class="font-bold text-lg">친구 펫</span>
+<div id="collection-screen" class="screen bg-gradient-to-b from-indigo-100 to-indigo-50 flex-col">
+    <div class="bg-white p-3 flex items-center shadow-md">
+        <button onclick="goHome()" class="text-gray-500 mr-3 text-2xl">⬅</button>
+        <h2 class="text-2xl font-bold text-indigo-700">나의 친구 도감</h2>
+    </div>
+    <div class="flex-1 overflow-auto p-4">
+        <div id="collection-list" class="grid grid-cols-2 gap-3">
         </div>
-        <div class="bar-container w-48 h-4 bg-gray-700">
-            <div id="enemy-hp-bar" class="bg-red-500 h-full transition-all duration-300" style="width: 100%"></div>
-        </div>
-        <img id="enemy-pet-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='100px';" class="w-32 h-32 mt-4 object-contain transition-transform duration-100" alt="Enemy">
-    </div>
-
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-        <span class="text-6xl font-black text-yellow-500 italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">VS</span>
-    </div>
-
-    <div class="flex flex-col items-center mb-8 mt-auto z-10">
-        <img id="my-battle-img" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='100px';" class="w-32 h-32 mb-4 object-contain transition-transform duration-100" alt="Me">
-        <div class="bar-container w-48 h-4 bg-gray-700">
-            <div id="my-hp-bar" class="bg-green-500 h-full transition-all duration-300" style="width: 100%"></div>
-        </div>
-        <div class="flex items-center gap-2 text-white mt-1">
-            <span class="bg-blue-500 px-2 rounded font-bold text-sm">Lv.<span id="my-battle-level">?</span></span>
-            <span id="my-battle-name" class="font-bold text-lg">내 펫</span>
-        </div>
-    </div>
-
-    <div id="battle-message" class="absolute bottom-1/2 transform translate-y-16 w-full text-center text-white text-xl font-bold drop-shadow-md z-30 opacity-0 transition-opacity">
-        전투 시작!
-    </div>
-
-    <button onclick="skipBattle()" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm z-50">결과 보기 >></button>
-</div>
-
-<div id="battle-result-screen" class="screen bg-black bg-opacity-90 absolute top-0 left-0 w-full h-full z-50 justify-center items-center text-white text-center">
-    <h2 id="result-title" class="text-5xl font-bold mb-4 text-yellow-400">승리!</h2>
-    <div id="result-reward" class="mb-8 text-xl">
-        <p>사탕 +3개</p>
-        <p>경험치 +10</p>
-    </div>
-    <button onclick="finishBattle()" class="game-btn bg-white text-black px-8 py-3 rounded-xl font-bold text-xl">
-        집으로
-    </button>
-</div>
-
-<div id="collection-screen" class="screen bg-indigo-50 p-6 flex-col">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-indigo-800">친구 도감</h2>
-        <button onclick="goHome()" class="bg-gray-300 px-3 py-1 rounded font-bold text-gray-700">닫기</button>
-    </div>
-    <div id="collection-list" class="grid grid-cols-2 gap-4 overflow-y-auto pb-4">
     </div>
 </div>
 
 <script>
-    /* --- 1. 게임 데이터 및 상태 관리 --- */
+    /* --- 게임 전역 상태 및 초기화 --- */
     let gameState = {
         player: {
             number: 0,
             name: "",
             level: 1,
             exp: 0,
+            maxExp: 20,
             maxHp: 30,
             attack: 5,
             hunger: 100,
@@ -381,6 +365,12 @@
             candies: 5,
             characterId: '00'
         },
+        quiz: {
+            type: 'number',
+            score: 0,
+            combo: 0,
+            currentQuestion: null
+        },
         collection: [],
         lastTickTime: Date.now()
     };
@@ -388,367 +378,471 @@
     const LEVEL_EXP_BASE = 20;
     const LEVEL_EXP_INC = 5;
 
-    window.onload = function() {
-        loadGame();
-    };
+    // QR에 넣어줄 배포 페이지 주소
+    const BASE_PAGE_URL = "https://anjaehyeong0619-bot.github.io/Frends/FrendsV2.html";
 
-    function saveGame() {
-        gameState.lastTickTime = Date.now();
-        localStorage.setItem('myPetSchoolDataV3', JSON.stringify(gameState));
+    // URL 쿼리로부터 읽어온 "적" 정보 (enemyNumber용)
+    let enemyFromUrl = null;
+
+    function initEnemyFromUrl() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const numStr =
+                params.get("enemyNumber") ||
+                params.get("number") ||
+                params.get("n");
+
+            if (!numStr) return;
+
+            const num = Number(numStr);
+            if (!num || num <= 0) return;
+
+            const name =
+                params.get("enemyName") ||
+                params.get("name") ||
+                `친구 ${num}`;
+
+            const level =
+                Number(params.get("enemyLevel") || params.get("level")) ||
+                1;
+
+            enemyFromUrl = { number: num, name, level };
+            console.log("[URL ENEMY (enemyNumber)]", enemyFromUrl);
+        } catch (e) {
+            console.warn("initEnemyFromUrl error", e);
+        }
     }
 
-    function loadGame() {
-        const data = localStorage.getItem('myPetSchoolDataV3');
-        if (data) {
-            const parsed = JSON.parse(data);
-            gameState = { ...gameState, ...parsed, player: { ...gameState.player, ...parsed.player } };
-            calculateOfflineProgress();
+    // 페이지 로드 전에 한 번 URL 분석
+    initEnemyFromUrl();
 
-            if (gameState.player.name) {
-                showScreen('main-screen');
-                startGameLoop();
-            } else {
-                showScreen('start-screen');
+    // VS 준비 화면에서 사용할 적 데이터
+    let battleState = {
+        me: null,
+        enemy: null,
+        turn: 0,
+        plan: [],
+        isWin: false
+    };
+
+    let pendingEnemyData = null; // VS 준비용으로 보관하는 적 정보
+
+    function initGame() {
+        const saved = localStorage.getItem('myPetSchoolDataV3');
+        if (saved) {
+            try {
+                gameState = JSON.parse(saved);
+            } catch {
+                // 파싱 실패 시 기본값으로
             }
+        }
+
+        // quiz 구조 보정
+        if (!gameState.quiz) {
+            gameState.quiz = {
+                type: 'number',
+                score: 0,
+                combo: 0,
+                currentQuestion: null
+            };
+        }
+
+        if (gameState.player && gameState.player.name) {
+            showScreen('main-screen');
+            updateUI();
+            startHungerTimer();
         } else {
             showScreen('start-screen');
         }
-        updateUI();
-    }
 
-    function calculateOfflineProgress() {
-        const now = Date.now();
-        const diffMs = now - gameState.lastTickTime;
-        const diffMinutes = Math.floor(diffMs / 60000);
-
-        if (diffMinutes > 0) {
-            const hungerDrop = Math.floor(diffMinutes / 30) * 10;
-            gameState.player.hunger = Math.max(0, gameState.player.hunger - hungerDrop);
-
-            const hours = Math.floor(diffMinutes / 60);
-            if (hours > 0) {
-                gameState.player.cleanliness = Math.max(0, gameState.player.cleanliness - (hours * 10));
-                for(let i=0; i<hours; i++) {
-                    if(Math.random() > 0.5 && gameState.player.poops < 3) {
-                        gameState.player.poops++;
-                    }
-                }
-            }
-        }
-        gameState.lastTickTime = now;
+        // URL 파라미터 확인하여 자동 배틀 시작(= VS 준비 진입)
+        checkURLForBattle();
     }
 
     function startGame() {
-        const num = document.getElementById('student-number').value;
-        const name = document.getElementById('pet-name').value;
-
+        const num = parseInt(document.getElementById('student-number').value);
+        const name = document.getElementById('pet-name').value.trim();
         if (!num || !name) {
-            alert('번호와 이름을 모두 적어주세요!');
+            alert('번호와 이름을 모두 입력해주세요!');
+            return;
+        }
+        gameState.player.number = num;
+        gameState.player.name = name;
+        saveGame();
+        showScreen('main-screen');
+        updateUI();
+        startHungerTimer();
+
+        // 게임 시작 후에도 URL 파라미터/대기 중 배틀 확인
+        checkURLForBattle();
+    }
+
+    function saveGame() {
+        localStorage.setItem('myPetSchoolDataV3', JSON.stringify(gameState));
+    }
+
+    /* --- URL 파라미터로 자동 배틀 준비 --- */
+    function checkURLForBattle() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const battleData = urlParams.get('battle');
+        let enemyData = null;
+
+        if (battleData) {
+            try {
+                const decodedData = atob(battleData);
+                enemyData = JSON.parse(decodedData);
+                console.log('[URL ENEMY (battle)]', enemyData);
+            } catch (e) {
+                console.error('배틀 데이터 파싱 실패(battle):', e);
+            }
+        } else if (enemyFromUrl) {
+            // enemyNumber=... 방식도 지원
+            enemyData = enemyFromUrl;
+            console.log('[URL ENEMY (enemyNumber 사용)]', enemyData);
+        }
+
+        // 지금 바로 VS 준비로 갈 수 있는지 체크
+        if (enemyData) {
+            if (!gameState.player || !gameState.player.name) {
+                // 내 펫 정보가 없으면, 일단 battle 파라미터(or enemyData)를 세션에 저장해 두고
+                // 번호/이름 입력 후 다시 checkURLForBattle()에서 처리
+                try {
+                    const encoded = battleData || btoa(JSON.stringify(enemyData));
+                    sessionStorage.setItem('pendingBattle', encoded);
+                } catch (e) {
+                    console.error('pendingBattle 저장 실패:', e);
+                }
+                return;
+            }
+
+            // 내 펫 정보가 이미 있으면 곧바로 VS 준비 화면으로
+            startBattleFromData(enemyData);
+
+            // 새로고침 시 반복 실행 방지
+            window.history.replaceState({}, document.title, window.location.pathname);
             return;
         }
 
-        const n = Math.max(0, Math.min(99, parseInt(num, 10) || 0)); // 0~99 제한
-
-        gameState.player.number = n;
-        gameState.player.name = name;
-        gameState.player.characterId = n.toString().padStart(2, "0");
-
-        saveGame();
-        showScreen('main-screen');
-        startGameLoop();
-        updateUI();
-    }
-
-
-    /* --- 2. 메인 게임 루프 & UI --- */
-    let gameInterval;
-
-    function startGameLoop() {
-        if(gameInterval) clearInterval(gameInterval);
-        gameInterval = setInterval(() => {
-            const now = Date.now();
-            if (now - gameState.lastTickTime > 60000) {
-                calculateOfflineProgress();
-                saveGame();
-                updateUI();
+        // 쌓여있던 pendingBattle 처리 (번호/이름 입력 후)
+        const pendingBattle = sessionStorage.getItem('pendingBattle');
+        if (pendingBattle && gameState.player && gameState.player.name) {
+            try {
+                const decodedData = atob(pendingBattle);
+                const enemy = JSON.parse(decodedData);
+                startBattleFromData(enemy);
+                sessionStorage.removeItem('pendingBattle');
+            } catch (e) {
+                console.error('대기 중 배틀 데이터 파싱 실패:', e);
             }
-        }, 10000);
-        renderPoops();
+        }
     }
 
+    // VS 준비 화면으로 진입시키는 함수
+    function startBattleFromData(enemyData) {
+        pendingEnemyData = enemyData;
+        showBattleReadyScreen();
+    }
+
+    /* --- 2. 메인화면 및 UI 업데이트 --- */
     function updateUI() {
         const p = gameState.player;
-        document.getElementById('ui-level').innerText = p.level;
-        document.getElementById('ui-name').innerText = p.name;
-        document.getElementById('ui-candy').innerText = p.candies;
+        if (!p) return;
 
-        const reqExp = LEVEL_EXP_BASE + (p.level - 1) * LEVEL_EXP_INC;
-        const expPct = (p.exp / reqExp) * 100;
-        document.getElementById('ui-exp-bar').style.width = `${expPct}%`;
-        document.getElementById('ui-exp-text').innerText = `${p.exp}/${reqExp}`;
+        document.getElementById('ui-name').innerText = p.name || '';
+        document.getElementById('ui-level').innerText = p.level ?? 1;
+        document.getElementById('ui-candy').innerText = p.candies ?? 0;
+        document.getElementById('ui-exp-text').innerText = `${p.exp ?? 0}/${p.maxExp ?? 20}`;
 
-        document.getElementById('ui-hunger-bar').style.width = `${p.hunger}%`;
-        document.getElementById('ui-clean-bar').style.width = `${p.cleanliness}%`;
+        const expRatio = (p.exp ?? 0) / (p.maxExp || 20);
+        document.getElementById('ui-exp-bar').style.width = `${Math.min(100, Math.max(0, expRatio * 100))}%`;
 
-        // 메인 이미지 업데이트
-        const imgEl = document.getElementById('pet-image');
-        imgEl.src = `./png/${p.characterId}.png`;
+        document.getElementById('ui-hunger-bar').style.width = `${Math.max(0, Math.min(100, p.hunger ?? 0))}%`;
+        document.getElementById('ui-clean-bar').style.width = `${Math.max(0, Math.min(100, p.cleanliness ?? 0))}%`;
+
+        const imgNumber = (p.number || 0).toString().padStart(2, "0");
+        const petImg = document.getElementById('pet-image');
+        petImg.src = `./png/${imgNumber}.png`;
+        petImg.style.width = '200px';
+        petImg.style.height = '200px';
 
         const bubble = document.getElementById('pet-bubble');
         if (p.hunger < 30) {
             bubble.innerText = "배고파요...";
             bubble.style.opacity = 1;
-        } else if (p.cleanliness < 30 || p.poops > 0) {
-            bubble.innerText = "냄새나요...";
+        } else if (p.cleanliness < 30) {
+            bubble.innerText = "씻고 싶어요...";
             bubble.style.opacity = 1;
         } else {
             bubble.style.opacity = 0;
         }
     }
 
-    function renderPoops() {
-        const container = document.getElementById('poop-container');
-        container.innerHTML = '';
-        for(let i=0; i<gameState.player.poops; i++) {
-            const poop = document.createElement('div');
-            poop.className = 'poop';
-            poop.innerText = '💩';
-            poop.style.left = `${20 + (i*25)}%`;
-            poop.style.bottom = '10%';
-            poop.onclick = (e) => {
-                e.stopPropagation();
-                cleanPoop();
-            };
-            container.appendChild(poop);
-        }
+    function startHungerTimer() {
+        setInterval(() => {
+            if (!gameState.player) return;
+            gameState.player.hunger = Math.max(0, (gameState.player.hunger ?? 0) - 1);
+            updateUI();
+            saveGame();
+        }, 5000);
+
+        setInterval(() => {
+            if (!gameState.player) return;
+            if (Math.random() < 0.3 && (gameState.poopCount ?? 0) < 3) {
+                createPoop();
+            }
+        }, 10000);
     }
 
-    /* --- 3. 펫 관리 액션 --- */
     function feedPet() {
-        if (gameState.player.candies < 3) {
-            alert('사탕이 부족해요! 공부나 배틀을 해서 사탕을 모아요.');
+        const p = gameState.player;
+        if (!p) return;
+
+        if (p.candies < 3) {
+            alert("사탕이 부족해요! 공부해서 사탕을 모아요.");
             return;
         }
-        if (gameState.player.hunger >= 100) {
-            alert('배가 불러요!');
-            return;
-        }
-        gameState.player.candies -= 3;
-        gameState.player.hunger = Math.min(100, gameState.player.hunger + 40);
-        if(Math.random() < 0.1) {
-            addExp(5);
-            alert('맛있게 먹고 쑥쑥 컸어요! (+5 EXP)');
-        }
+        p.candies -= 3;
+        p.hunger = Math.min(100, (p.hunger ?? 0) + 30);
+        addExp(5);
         saveGame();
         updateUI();
+    }
 
-        const img = document.getElementById('pet-image');
-        img.style.transform = "scale(1.2)";
-        setTimeout(() => img.style.transform = "scale(1)", 200);
+    function createPoop() {
+        const container = document.getElementById('poop-container');
+        const poop = document.createElement('div');
+        poop.className = 'poop';
+        poop.innerText = '💩';
+        poop.style.left = Math.random() * 80 + '%';
+        poop.style.top = Math.random() * 80 + '%';
+        poop.onclick = () => {
+            poop.remove();
+            gameState.poopCount--;
+            gameState.player.cleanliness = Math.min(100, (gameState.player.cleanliness ?? 0) + 10);
+            addExp(2);
+            updateUI();
+            saveGame();
+        };
+        container.appendChild(poop);
+        gameState.poopCount = (gameState.poopCount ?? 0) + 1;
+        gameState.player.cleanliness = Math.max(0, (gameState.player.cleanliness ?? 0) - 20);
+        updateUI();
+        saveGame();
     }
 
     function cleanPoop() {
-        if (gameState.player.poops === 0 && gameState.player.cleanliness >= 90) {
-            alert('이미 깨끗해요!');
+        const poops = document.querySelectorAll('.poop');
+        if (poops.length === 0) {
+            alert("깨끗해요!");
             return;
         }
-        if (gameState.player.poops > 0) {
-            gameState.player.poops = 0;
-            addExp(2);
-        }
+        poops.forEach(p => p.remove());
+        gameState.poopCount = 0;
         gameState.player.cleanliness = 100;
-        saveGame();
+        addExp(5);
         updateUI();
-        renderPoops();
+        saveGame();
     }
 
     function addExp(amount) {
-        gameState.player.exp += amount;
-        const reqExp = LEVEL_EXP_BASE + (gameState.player.level - 1) * LEVEL_EXP_INC;
-        if (gameState.player.exp >= reqExp) {
-            gameState.player.level++;
-            gameState.player.exp -= reqExp;
-            gameState.player.maxHp += 2;
-            gameState.player.attack += 1;
-            alert(`레벨 업! Lv.${gameState.player.level} 이 되었어요!`);
+        const p = gameState.player;
+        if (!p) return;
+
+        p.exp = (p.exp ?? 0) + amount;
+        p.maxExp = p.maxExp || LEVEL_EXP_BASE;
+
+        while (p.exp >= p.maxExp) {
+            p.exp -= p.maxExp;
+            p.level = (p.level ?? 1) + 1;
+            p.maxExp = Math.floor(p.maxExp * 1.5);
+            alert(`🎉 레벨업! Lv.${p.level}`);
         }
-    }
-
-    /* --- 4. 퀴즈 시스템 (수정됨) --- */
-    let quizTimer, currentSubject = '', combo = 0, timeLeft = 10;
-    let koreanProblemSet = []; // 국어 문제 저장용
-
-    function goToQuizSelect() { showScreen('quiz-select-screen'); }
-
-    async function startQuiz(subject) {
-        currentSubject = subject;
-        combo = 0;
-        document.getElementById('quiz-combo').innerText = 0;
-
-        // 국어 퀴즈일 경우 로컬 JSON 파일 로드
-        if (subject === 'korean') {
-            try {
-                // 주의: 로컬 파일(index.html)을 그냥 열면 브라우저 보안 정책상 fetch가 차단될 수 있습니다.
-                // 웹 서버(Live Server 등)를 통해 실행해야 합니다.
-                const response = await fetch('./quiz/Koquiz.json');
-                if (!response.ok) throw new Error("JSON 파일을 찾을 수 없습니다.");
-                const data = await response.json();
-                koreanProblemSet = data.questions;
-            } catch (error) {
-                console.error(error);
-                alert("퀴즈 데이터를 불러오는데 실패했습니다.\n(로컬 환경에서는 보안상 실행되지 않을 수 있습니다.)");
-                return;
-            }
-        }
-
-        showScreen('quiz-play-screen');
-        nextQuestion();
-    }
-
-    function nextQuestion() {
-        timeLeft = 10;
-        updateTimerBar();
-        if(quizTimer) clearInterval(quizTimer);
-        quizTimer = setInterval(() => {
-            timeLeft -= 0.1;
-            updateTimerBar();
-            if (timeLeft <= 0) handleWrong();
-        }, 100);
-        generateQuestion();
-    }
-
-    function updateTimerBar() {
-        const pct = (timeLeft / 10) * 100;
-        document.getElementById('timer-bar').style.width = `${pct}%`;
-    }
-
-    function generateQuestion() {
-        const container = document.getElementById('quiz-options');
-        container.innerHTML = '';
-        const qDiv = document.getElementById('quiz-question');
-        let questionText = "", answer = 0, options = [];
-
-        if (currentSubject === 'math') {
-            const a = Math.floor(Math.random() * 9) + 1;
-            const b = Math.floor(Math.random() * 9) + 1;
-            if (Math.random() > 0.5) {
-                questionText = `${a} + ${b} = ?`;
-                answer = a + b;
-            } else {
-                const max = Math.max(a, b), min = Math.min(a, b);
-                questionText = `${max} - ${min} = ?`;
-                answer = max - min;
-            }
-            options = [answer, answer + 1, answer - 1, answer + 2];
-            options.sort(() => Math.random() - 0.5);
-            options = [...new Set(options)];
-            while(options.length < 4) options.push(options[0]+1);
-        }
-        else if (currentSubject === 'korean') {
-            // JSON에서 로드된 문제 중 랜덤 선택
-            if (!koreanProblemSet || koreanProblemSet.length === 0) {
-                alert("문제 데이터가 없습니다.");
-                endQuiz();
-                return;
-            }
-            const randIdx = Math.floor(Math.random() * koreanProblemSet.length);
-            const q = koreanProblemSet[randIdx];
-
-            questionText = q.prompt; // 문제 (예: "_교")
-            options = q.choices; // 보기 배열
-            answer = q.choices[q.answerIndex]; // 정답 텍스트
-        }
-
-        qDiv.innerText = questionText;
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = "bg-blue-100 hover:bg-blue-200 text-2xl font-bold py-8 rounded-xl border-b-4 border-blue-300 w-full h-full";
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(opt, answer);
-            container.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selected, correct) {
-        clearInterval(quizTimer);
-
-        // --- 스탯 변동 로직 추가 ---
-        // 공부하기를 시도하면 배고픔 감소
-        gameState.player.hunger = Math.max(0, gameState.player.hunger - 3);
-        // 일정 확률(30%)로 청결도 감소
-        if (Math.random() < 0.3) {
-            gameState.player.cleanliness = Math.max(0, gameState.player.cleanliness - 5);
-        }
-        updateUI(); // UI에 즉시 반영
         saveGame();
-
-        if (String(selected) === String(correct)) {
-            combo++;
-            showFeedback("⭕");
-            let expGain = 5 + (combo > 1 ? combo : 0);
-            addExp(expGain);
-            if (combo % 3 === 0) gameState.player.candies++;
-            document.getElementById('quiz-combo').innerText = combo;
-            setTimeout(nextQuestion, 800);
-        } else {
-            // 틀리면 바로 종료
-            handleWrong();
-        }
-    }
-
-    function handleWrong() {
-        showFeedback("❌");
-        combo = 0;
-        document.getElementById('quiz-combo').innerText = 0;
-
-        // 오답 시 잠시 후 퀴즈 종료 (즉사)
-        setTimeout(() => {
-            alert("틀렸어요! 공부가 끝났습니다.");
-            endQuiz();
-        }, 1000);
-    }
-
-    function showFeedback(emoji) {
-        const el = document.getElementById('quiz-feedback');
-        el.innerText = emoji;
-        el.style.opacity = 1;
-        setTimeout(() => { el.style.opacity = 0; }, 500);
-    }
-
-    function endQuiz() {
-        clearInterval(quizTimer);
-        showScreen('main-screen');
         updateUI();
     }
 
-    /* --- 5. 배틀 시스템 --- */
-    let battleState = { me: {}, enemy: {}, plan: [], turn: 0, isWin: false, pendingEnemy: null };
-
-    function goToBattleSetup() {
-        showScreen('battle-setup-screen');
+    /* --- 3. 퀴즈 시스템 --- */
+    function goToQuizSelect() {
+        showScreen('quiz-select-screen');
     }
 
-    function scanQrImage() {
-        const fileInput = document.getElementById('qr-file-input');
-        if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+    function startQuiz(type) {
+        gameState.quiz.type = type;
+        gameState.quiz.score = 0;
+        gameState.quiz.combo = 0;
+        showScreen('quiz-screen');
+        document.getElementById('quiz-score').innerText = `점수: 0`;
+        document.getElementById('quiz-combo').innerText = `연속: 0`;
+        generateQuestion();
+    }
 
-        const file = fileInput.files[0];
+    function generateQuestion() {
+        const type = gameState.quiz.type;
+        let question, correctAnswer, wrongAnswers;
+
+        if (type === 'number') {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            const op = Math.random() > 0.5 ? '+' : '-';
+            if (op === '+') {
+                question = `${a} + ${b} = ?`;
+                correctAnswer = a + b;
+            } else {
+                question = `${Math.max(a, b)} - ${Math.min(a, b)} = ?`;
+                correctAnswer = Math.max(a, b) - Math.min(a, b);
+            }
+            wrongAnswers = [];
+            while (wrongAnswers.length < 3) {
+                const wrong = correctAnswer + Math.floor(Math.random() * 10) - 5;
+                if (wrong !== correctAnswer && wrong >= 0 && !wrongAnswers.includes(wrong)) {
+                    wrongAnswers.push(wrong);
+                }
+            }
+        } else if (type === 'korean') {
+            const words = [
+                { q: '사과', c: '🍎', w: ['🍌', '🍇', '🍊'] },
+                { q: '강아지', c: '🐕', w: ['🐈', '🐁', '🐓'] },
+                { q: '자동차', c: '🚗', w: ['🚁', '✈️', '🚢'] },
+                { q: '꽃', c: '🌸', w: ['🌲', '🌵', '🍄'] },
+                { q: '별', c: '⭐', w: ['☀️', '🌙', '☁️'] }
+            ];
+            const item = words[Math.floor(Math.random() * words.length)];
+            question = `"${item.q}"는 어떤 그림일까요?`;
+            correctAnswer = item.c;
+            wrongAnswers = item.w;
+        } else {
+            const words = [
+                { q: 'Apple', c: '사과', w: ['바나나', '포도', '오렌지'] },
+                { q: 'Dog', c: '개', w: ['고양이', '쥐', '닭'] },
+                { q: 'Car', c: '자동차', w: ['헬리콥터', '비행기', '배'] },
+                { q: 'Tree', c: '나무', w: ['꽃', '풀', '버섯'] },
+                { q: 'Water', c: '물', w: ['불', '흙', '공기'] }
+            ];
+            const item = words[Math.floor(Math.random() * words.length)];
+            question = `"${item.q}"의 뜻은?`;
+            correctAnswer = item.c;
+            wrongAnswers = item.w;
+        }
+
+        gameState.quiz.currentQuestion = { question, correctAnswer };
+        displayQuestion(question, correctAnswer, wrongAnswers);
+    }
+
+    function displayQuestion(question, correct, wrongs) {
+        document.getElementById('quiz-question').innerText = question;
+        const answersEl = document.getElementById('quiz-answers');
+        answersEl.innerHTML = '';
+
+        const allAnswers = [correct, ...wrongs].sort(() => Math.random() - 0.5);
+        allAnswers.forEach(ans => {
+            const btn = document.createElement('button');
+            btn.className = 'game-btn bg-blue-200 hover:bg-blue-300 p-6 rounded-xl text-2xl font-bold border-b-4 border-blue-400';
+            btn.innerText = ans;
+            btn.onclick = () => checkAnswer(ans);
+            answersEl.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(answer) {
+        const correct = gameState.quiz.currentQuestion.correctAnswer;
+        const isCorrect = answer == correct;
+
+        if (isCorrect) {
+            gameState.quiz.score += 10;
+            gameState.quiz.combo++;
+            gameState.player.candies += 1;
+            addExp(3);
+
+            if (gameState.quiz.combo > 1 && gameState.quiz.combo % 3 === 0) {
+                showComboEffect(gameState.quiz.combo);
+                gameState.player.candies += 2;
+            }
+        } else {
+            gameState.quiz.combo = 0;
+            alert('아깝네요! 다시 도전해요.');
+        }
+
+        document.getElementById('quiz-score').innerText = `점수: ${gameState.quiz.score}`;
+        document.getElementById('quiz-combo').innerText = `연속: ${gameState.quiz.combo}`;
+        saveGame();
+        generateQuestion();
+    }
+
+    function showComboEffect(combo) {
+        const el = document.createElement('div');
+        el.className = 'combo-text';
+        el.innerText = `${combo} COMBO! +2 사탕`;
+        el.style.left = '50%';
+        el.style.top = '50%';
+        el.style.transform = 'translate(-50%, -50%)';
+        document.getElementById('quiz-screen').appendChild(el);
+        setTimeout(() => el.remove(), 500);
+    }
+
+    function endQuiz() {
+        alert(`퀴즈 끝! 점수: ${gameState.quiz.score}, 사탕을 모았어요!`);
+        goHome();
+    }
+
+    /* --- 4. 배틀 시스템 --- */
+    function goToBattle() {
+        showScreen('battle-select-screen');
+    }
+
+    function showMyQr() {
+        const myData = {
+            name: gameState.player.name,
+            level: gameState.player.level,
+            number: gameState.player.number
+        };
+        const dataStr = JSON.stringify(myData);
+        const encodedData = btoa(dataStr);
+
+        // 배포 페이지 URL에 파라미터 추가
+        const battleUrl = `${BASE_PAGE_URL}?battle=${encodedData}`;
+
+        const modal = document.getElementById('my-qr-modal');
+        modal.classList.remove('hidden');
+
+        const qrBox = document.getElementById('my-qr-box');
+        qrBox.innerHTML = '';
+
+        new QRCode(qrBox, {
+            text: battleUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
+        });
+
+        document.getElementById('my-qr-text').innerText = `Lv.${myData.level} ${myData.name}`;
+    }
+
+    function closeMyQrModal() {
+        document.getElementById('my-qr-modal').classList.add('hidden');
+    }
+
+    function scanQRFromFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const img = new Image();
-            img.onload = function() {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
                 canvas.width = img.width;
                 canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, canvas.width, canvas.height);
+                context.drawImage(img, 0, 0);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
 
                 if (code) {
-                    handleQrPayload(code.data);
+                    scanBattle(code.data);
                 } else {
-                    alert('QR 코드를 인식하지 못했어요. 다시 찍어주세요.');
+                    alert('QR 코드를 찾을 수 없어요. 다시 시도해주세요.');
                 }
             };
             img.src = e.target.result;
@@ -756,274 +850,101 @@
         reader.readAsDataURL(file);
     }
 
-    // ✅ QR 내용 해석: JSON / URL / 콜론 분리 전부 지원
-    function handleQrPayload(data) {
-        const raw = String(data || "").trim();
-        console.log("[QR RAW]", raw);
-
-        // 1) JSON 형식 먼저 처리 (kind 없어도 number/num 있으면 인정)
+    function scanBattle(data) {
         try {
-            if (raw.startsWith("{") && raw.endsWith("}")) {
-                const obj = JSON.parse(raw);
-                if (obj && (obj.number != null || obj.num != null)) {
-                    const num = Number(obj.number ?? obj.num);
-                    if (!Number.isNaN(num) && num > 0) {
-                        const name = obj.name || `친구 ${num}`;
-                        const level =
-                            Number(obj.level) || gameState.player.level || 1;
-                        enterBattleReady({ number: num, name, level });
-                        return;
-                    }
+            let enemyData;
+
+            // URL 형식인지 확인
+            if (data.includes('battle=')) {
+                const url = new URL(data);
+                const battleParam = url.searchParams.get('battle');
+                if (battleParam) {
+                    const decodedData = atob(battleParam);
+                    enemyData = JSON.parse(decodedData);
+                } else {
+                    throw new Error('Invalid battle URL');
                 }
-            }
-        } catch (e) {
-            console.warn("QR JSON parse error", e);
-        }
-
-        // 2) URL 형식 처리: ?number=15 또는 ?n=15 같이 오는 경우
-        try {
-            if (/^https?:\/\//i.test(raw)) {
-                const url = new URL(raw);
-                const numStr =
-                    url.searchParams.get("number") ??
-                    url.searchParams.get("n");
-                if (numStr) {
-                    const num = Number(numStr);
-                    if (!Number.isNaN(num) && num > 0) {
-                        const name =
-                            url.searchParams.get("name") || `친구 ${num}`;
-                        const level =
-                            Number(url.searchParams.get("level")) ||
-                            gameState.player.level ||
-                            1;
-                        enterBattleReady({ number: num, name, level });
-                        return;
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn("QR URL parse error", e);
-        }
-
-        // 3) "pet-qr:..." 같은 prefix가 붙은 경우 잘라내기
-        let text = raw;
-        if (text.startsWith("pet-qr:")) {
-            text = text.slice("pet-qr:".length);
-        }
-
-        // 4) 콜론(:)으로 구분된 간단한 포맷: num[:name[:level]]
-        const parts = text.split(":");
-        const num = Number(parts[0]);
-        if (!Number.isNaN(num) && num > 0) {
-            const name = parts[1] || `친구 ${num}`;
-            const level =
-                Number(parts[2]) || gameState.player.level || 1;
-            enterBattleReady({ number: num, name, level });
-            return;
-        }
-
-        alert("알 수 없는 QR 코드입니다.\n\nQR 내용: " + raw);
-    }
-
-
-    // ✅ 내 펫 정보를 QR로 보여주는 기능
-    // ✅ 내 펫 정보를 QR로 보여주는 기능 (안전하게 수정 버전)
-    function openMyQrModal() {
-        // 1) 게임 시작 안 했으면 먼저 시작 유도
-        if (!gameState.player.number || !gameState.player.name) {
-            alert('먼저 "게임 시작"에서 내 번호와 펫 이름을 입력해주세요!');
-            return;
-        }
-
-        const payloadObj = {
-            kind: "pet-qr",
-            number: gameState.player.number,
-            name: gameState.player.name,
-            level: gameState.player.level || 1,
-        };
-        const payload = JSON.stringify(payloadObj);
-
-        const box = document.getElementById("my-qr-box");
-        const textEl = document.getElementById("my-qr-text");
-        const modal = document.getElementById("my-qr-modal");
-
-        if (!box || !textEl || !modal) {
-            alert("QR 모달 요소를 찾지 못했어요. (my-qr-box / my-qr-text / my-qr-modal)");
-            return;
-        }
-
-        // 2) 이전 QR 지우기
-        box.innerHTML = "";
-
-        // 3) QR 생성은 try/catch로 감싸서 에러 나도 모달은 뜨게 처리
-        try {
-            if (window.QRCode) {
-                new QRCode(box, {
-                    text: payload,
-                    width: 200,
-                    height: 200,
-                });
             } else {
-                box.textContent = "QR 라이브러리를 불러오지 못했어요.";
+                // 기존 방식 (JSON 직접 파싱)
+                enemyData = JSON.parse(data);
             }
+
+            // QR 스캔 후에도 VS 준비 화면부터
+            startBattleFromData(enemyData);
         } catch (e) {
-            console.error("QR 생성 중 오류", e);
-            box.textContent = "QR 생성 중 오류가 발생했습니다.";
-        }
-
-        // 4) QR 내용 텍스트도 표시 (디버그 / 설명용)
-        textEl.textContent = payload;
-
-        // 5) 모달 보이기
-        modal.classList.remove("hidden");
-    }
-
-    function closeMyQrModal() {
-        const modal = document.getElementById("my-qr-modal");
-        if (modal) {
-            modal.classList.add("hidden");
+            alert('올바른 QR 코드가 아니에요!');
+            console.error(e);
         }
     }
 
-    // ✅ 혹시 모를 전역 범위 문제 예방: 버튼 onclick에서 확실히 찾을 수 있도록 export
-    window.openMyQrModal = openMyQrModal;
-    window.closeMyQrModal = closeMyQrModal;
-
-
-    function closeMyQrModal() {
-        const modal = document.getElementById('my-qr-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-    }
-
-
-
-    function searchByNumber() {
-        const input = document.getElementById('friend-code-input').value;
-        if(!input) { alert('번호를 입력해주세요.'); return; }
-        const lvl = Math.max(1, gameState.player.level + (Math.floor(Math.random()*5)-2));
-        enterBattleReady({
-            number: Number(input),
-            name: `친구 ${input}`,
-            level: lvl
-        });
-    }
-
-    function randomBattle() {
-        const lvl = Math.max(1, gameState.player.level + (Math.floor(Math.random()*5)-2));
-        enterBattleReady({
-            number: 999,
-            name: "야생의 펫",
-            level: lvl
-        });
-    }
-
-    function enterBattleReady(enemyData) {
-        battleState.pendingEnemy = enemyData;
-
-        document.getElementById('ready-my-name').innerText = gameState.player.name;
-        document.getElementById('ready-my-level').innerText = gameState.player.level;
-        document.getElementById('ready-my-img').src = `./png/${gameState.player.characterId}.png`;
-        document.getElementById('ready-my-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; };
-
-        document.getElementById('ready-enemy-name').innerText = enemyData.name;
-        document.getElementById('ready-enemy-level').innerText = enemyData.level;
-
-        let enemyImgId = (enemyData.number || 0).toString().padStart(2, "0");
-        document.getElementById('ready-enemy-img').src = `./png/${enemyImgId}.png`;
-        document.getElementById('ready-enemy-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; };
-
-        showScreen('battle-ready-screen');
-    }
-
-    function confirmBattle() {
-        if(!battleState.pendingEnemy) return;
-        startBattle(battleState.pendingEnemy);
-    }
-
+    /* --- 5. 배틀 로직 --- */
     function startBattle(enemyData) {
-        const myStats = {
+        const myHp = 50 + gameState.player.level * 10;
+        const enemyHp = 50 + enemyData.level * 10;
+
+        battleState.me = {
             name: gameState.player.name,
-            hp: gameState.player.maxHp,
-            maxHp: gameState.player.maxHp,
-            level: gameState.player.level
+            level: gameState.player.level,
+            maxHp: myHp,
+            attack: 5 + gameState.player.level * 2
         };
 
-        const enemyMaxHp = 30 + (enemyData.level - 1) * 2;
-        const enemyStats = {
+        battleState.enemy = {
             name: enemyData.name,
-            hp: enemyMaxHp,
-            maxHp: enemyMaxHp,
             level: enemyData.level,
-            number: enemyData.number
+            number: enemyData.number,
+            maxHp: enemyHp,
+            attack: 5 + enemyData.level * 2
         };
 
-        battleState = {
-            me: myStats,
-            enemy: enemyStats,
-            turn: 0,
-            isWin: false,
-            pendingEnemy: null
-        };
+        battleState.turn = 0;
+        battleState.isWin = Math.random() > 0.5;
+        battleState.plan = generateBattlePlan();
 
-        const levelDiff = myStats.level - enemyStats.level;
-        let winChance = 0.5 + (levelDiff * 0.1);
-        winChance = Math.max(0.1, Math.min(0.9, winChance));
-        battleState.isWin = Math.random() < winChance;
+        document.getElementById('my-battle-name').innerText = battleState.me.name;
+        document.getElementById('enemy-name').innerText = `${battleState.enemy.name} (Lv.${battleState.enemy.level})`;
 
-        let turns = 5;
-        if (Math.abs(levelDiff) >= 3) turns = 3;
+        const myImgNum = (gameState.player.number || 0).toString().padStart(2, "0");
+        const enemyImgNum = (enemyData.number || 0).toString().padStart(2, "0");
 
-        battleState.plan = generateBattlePlan(myStats, enemyStats, battleState.isWin, turns);
+        const myImg = document.getElementById('my-battle-img');
+        myImg.src = `./png/${myImgNum}.png`;
+        myImg.style.width = '120px';
+        myImg.style.height = '120px';
 
-        document.getElementById('my-battle-level').innerText = myStats.level;
-        document.getElementById('my-battle-name').innerText = myStats.name;
-        document.getElementById('enemy-level').innerText = enemyStats.level;
-        document.getElementById('enemy-name').innerText = enemyStats.name;
+        const enemyImg = document.getElementById('enemy-pet-img');
+        enemyImg.src = `./png/${enemyImgNum}.png`;
+        enemyImg.style.width = '120px';
+        enemyImg.style.height = '120px';
 
-        document.getElementById('my-battle-img').src = document.getElementById('ready-my-img').src;
-        document.getElementById('enemy-pet-img').src = document.getElementById('ready-enemy-img').src;
+        updateHpBars(battleState.me.maxHp, battleState.me.maxHp, battleState.enemy.maxHp, battleState.enemy.maxHp);
 
-        document.getElementById('my-hp-bar').style.width = '100%';
-        document.getElementById('enemy-hp-bar').style.width = '100%';
-        document.getElementById('battle-result-screen').style.display = 'none';
-
-        showScreen('battle-screen');
         setTimeout(playNextTurn, 1000);
     }
 
-    function generateBattlePlan(me, enemy, iWin, turns) {
-        let plan = [];
-        let currentMyHp = me.maxHp;
-        let currentEnemyHp = enemy.maxHp;
-        let targetMyHp, targetEnemyHp;
-
-        if (iWin) {
-            targetEnemyHp = 0;
-            targetMyHp = Math.floor(me.maxHp * (0.2 + Math.random() * 0.6));
-        } else {
-            targetMyHp = 0;
-            targetEnemyHp = Math.floor(enemy.maxHp * (0.2 + Math.random() * 0.6));
-        }
-
-        const totalDmgToEnemy = enemy.maxHp - targetEnemyHp;
-        const totalDmgToMe = me.maxHp - targetMyHp;
-        let dmgToEnemyPerTurn = Math.floor(totalDmgToEnemy / Math.ceil(turns/2));
-        let dmgToMePerTurn = Math.floor(totalDmgToMe / Math.floor(turns/2));
-
+    function generateBattlePlan() {
+        const dmgToEnemyPerTurn = 3 + Math.floor(Math.random() * 5);
+        const dmgToMePerTurn = 3 + Math.floor(Math.random() * 5);
+        const iWin = battleState.isWin;
+        const winnerTotalDmg = iWin ? battleState.enemy.maxHp : battleState.me.maxHp;
+        const loserTotalDmg = Math.floor(winnerTotalDmg * 0.3 + Math.random() * winnerTotalDmg * 0.4);
+        const turns = 6 + Math.floor(Math.random() * 4);
+        const plan = [];
+        let currentMyHp = battleState.me.maxHp;
+        let currentEnemyHp = battleState.enemy.maxHp;
         let isMyTurn = true;
-        for(let i=0; i<turns; i++) {
+
+        for (let i = 0; i < turns; i++) {
             if (isMyTurn) {
-                let dmg = dmgToEnemyPerTurn + Math.floor(Math.random()*2);
+                let dmg = dmgToEnemyPerTurn + Math.floor(Math.random() * 2);
                 if (currentEnemyHp - dmg < 0) dmg = currentEnemyHp;
-                if (i === turns-1 && iWin) dmg = currentEnemyHp;
+                if (i === turns - 1 && iWin) dmg = currentEnemyHp;
                 currentEnemyHp -= dmg;
                 plan.push({ attacker: 'me', damage: dmg, remainingEnemyHp: currentEnemyHp, remainingMyHp: currentMyHp });
             } else {
-                let dmg = dmgToMePerTurn + Math.floor(Math.random()*2);
+                let dmg = dmgToMePerTurn + Math.floor(Math.random() * 2);
                 if (currentMyHp - dmg < 0) dmg = currentMyHp;
-                if (i === turns-1 && !iWin) dmg = currentMyHp;
+                if (i === turns - 1 && !iWin) dmg = currentMyHp;
                 currentMyHp -= dmg;
                 plan.push({ attacker: 'enemy', damage: dmg, remainingEnemyHp: currentEnemyHp, remainingMyHp: currentMyHp });
             }
@@ -1088,8 +1009,8 @@
     }
 
     function updateHpBars(myCur, myMax, enCur, enMax) {
-        document.getElementById('my-hp-bar').style.width = `${(myCur/myMax)*100}%`;
-        document.getElementById('enemy-hp-bar').style.width = `${(enCur/enMax)*100}%`;
+        document.getElementById('my-hp-bar').style.width = `${(myCur / myMax) * 100}%`;
+        document.getElementById('enemy-hp-bar').style.width = `${(enCur / enMax) * 100}%`;
     }
 
     function skipBattle() {
@@ -1125,6 +1046,52 @@
         document.getElementById('battle-result-screen').style.display = 'none';
         showScreen('main-screen');
         updateUI();
+    }
+
+    /* --- VS 준비 화면 제어 --- */
+    function showBattleReadyScreen() {
+        if (!pendingEnemyData || !gameState.player || !gameState.player.name) {
+            // 준비 정보가 없으면 메인으로
+            goHome();
+            return;
+        }
+
+        const p = gameState.player;
+        const e = pendingEnemyData;
+
+        const myImgNum = (p.number || 0).toString().padStart(2, "0");
+        const enemyImgNum = (e.number || 0).toString().padStart(2, "0");
+
+        const myImg = document.getElementById('ready-my-img');
+        myImg.src = `./png/${myImgNum}.png`;
+
+        const enemyImg = document.getElementById('ready-enemy-img');
+        enemyImg.src = `./png/${enemyImgNum}.png`;
+
+        document.getElementById('ready-my-name').innerText = p.name || '나';
+        document.getElementById('ready-my-level').innerText = `Lv.${p.level ?? 1}`;
+
+        document.getElementById('ready-enemy-name').innerText = e.name || '친구';
+        document.getElementById('ready-enemy-level').innerText = `Lv.${e.level ?? 1}`;
+
+        showScreen('battle-ready-screen');
+    }
+
+    function startBattleFromReady() {
+        if (!pendingEnemyData) {
+            goHome();
+            return;
+        }
+        const enemyData = pendingEnemyData;
+        pendingEnemyData = null;
+
+        showScreen('battle-screen');
+        startBattle(enemyData);
+    }
+
+    function cancelBattleFromReady() {
+        pendingEnemyData = null;
+        goHome();
     }
 
     /* --- 6. 도감 시스템 --- */
@@ -1171,25 +1138,32 @@
             s.style.display = 'none';
         });
         const target = document.getElementById(id);
+        if (!target) return;
         target.classList.add('active');
         target.style.display = 'flex';
     }
 
     function goHome() {
-        showScreen('main-screen');
-        updateUI();
+        if (gameState.player && gameState.player.name) {
+            showScreen('main-screen');
+            updateUI();
+        } else {
+            showScreen('start-screen');
+        }
     }
 
     function openSettings() {
-        if(confirm('처음부터 다시 할까요? (데이터가 모두 지워져요)')) {
+        if (confirm('처음부터 다시 할까요? (데이터가 모두 지워져요)')) {
             localStorage.removeItem('myPetSchoolDataV3');
             location.reload();
         }
     }
 
+    // 페이지 로드 시 게임 초기화
+    window.onload = initGame;
 </script>
 
-<!-- ✅ 내 펫 QR 모달 -->
+<!-- 내 펫 QR 모달 -->
 <div id="my-qr-modal"
      class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl p-4 w-72 text-center relative shadow-2xl border-4 border-purple-400">
@@ -1214,7 +1188,6 @@
         ></div>
     </div>
 </div>
-
 
 </body>
 </html>
