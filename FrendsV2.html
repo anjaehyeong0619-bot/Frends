@@ -161,7 +161,7 @@
         </div>
 
         <div class="relative mt-10">
-            <img id="pet-image" src="./png/pet_1.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='150px';" class="pet-bounce w-48 h-48 object-contain drop-shadow-lg" alt="Pet">
+            <img id="pet-image" src="" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; this.style.width='150px';" class="pet-bounce w-48 h-48 object-contain drop-shadow-lg" alt="Pet">
             <div id="poop-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
             <div id="pet-bubble" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg text-sm font-bold whitespace-nowrap opacity-0 transition-opacity">
                 배고파요...
@@ -215,16 +215,20 @@
             <div id="timer-bar" class="bg-red-500 h-full w-full"></div>
         </div>
     </div>
+
     <div class="flex-1 flex flex-col items-center justify-center w-full">
         <div id="quiz-question" class="text-6xl font-bold mb-12 text-gray-800 text-center">
             5 + 3 = ?
         </div>
+
         <div id="quiz-options" class="grid grid-cols-2 gap-4 w-full">
         </div>
     </div>
+
     <div id="quiz-feedback" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl opacity-0 pointer-events-none" style="text-shadow: 4px 4px 0 #fff;">
         ⭕
     </div>
+
     <button onclick="endQuiz()" class="mt-8 text-gray-400 font-bold border px-4 py-2 rounded-lg">그만하기</button>
 </div>
 
@@ -356,7 +360,7 @@
             cleanliness: 100,
             poops: 0,
             candies: 5,
-            characterId: 1
+            characterId: '01' // 기본값 문자열로 변경
         },
         collection: [],
         lastTickTime: Date.now()
@@ -426,7 +430,9 @@
 
         gameState.player.number = Number(num);
         gameState.player.name = name;
-        gameState.player.characterId = (Number(num) % 5) + 1; // V1 로직 유지: 1~5번 이미지 반복
+        // 캐릭터 ID를 1~5 범위의 두 자리 문자열로 설정 (예: '01', '02')
+        let charNum = (Number(num) % 5) + 1;
+        gameState.player.characterId = charNum.toString().padStart(2, '0');
 
         saveGame();
         showScreen('main-screen');
@@ -464,10 +470,9 @@
         document.getElementById('ui-hunger-bar').style.width = `${p.hunger}%`;
         document.getElementById('ui-clean-bar').style.width = `${p.cleanliness}%`;
 
-        // 메인 이미지 업데이트 (V1 스타일)
-        // 실제로는 player.characterId에 맞는 이미지가 필요하지만 여기선 예시로 pet_1.png 유지 혹은 교체
+        // 메인 이미지 업데이트: 두 자리 ID를 사용하여 경로 설정
         const imgEl = document.getElementById('pet-image');
-        // imgEl.src = `./png/pet_${p.characterId}.png`; 
+        imgEl.src = `./png/${p.characterId}.png`;
 
         const bubble = document.getElementById('pet-bubble');
         if (p.hunger < 30) {
@@ -753,7 +758,8 @@
         // UI 업데이트
         document.getElementById('ready-my-name').innerText = gameState.player.name;
         document.getElementById('ready-my-level').innerText = gameState.player.level;
-        document.getElementById('ready-my-img').src = `./png/pet_${gameState.player.characterId}.png`;
+        // 내 이미지 경로 업데이트
+        document.getElementById('ready-my-img').src = `./png/${gameState.player.characterId}.png`;
         // 에러 시 대체 이미지
         document.getElementById('ready-my-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png'; };
 
@@ -762,7 +768,8 @@
 
         // 적 이미지는 번호에 따라 결정 (999는 야생)
         let enemyImgNum = enemyData.number === 999 ? 2 : (enemyData.number % 5) + 1;
-        document.getElementById('ready-enemy-img').src = `./png/pet_${enemyImgNum}.png`;
+        let enemyImgId = enemyImgNum.toString().padStart(2, '0'); // 두 자리 ID로 변환
+        document.getElementById('ready-enemy-img').src = `./png/${enemyImgId}.png`;
         document.getElementById('ready-enemy-img').onerror = function() { this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; };
 
         showScreen('battle-ready-screen');
@@ -816,7 +823,7 @@
         document.getElementById('enemy-level').innerText = enemyStats.level;
         document.getElementById('enemy-name').innerText = enemyStats.name;
 
-        // 이미지
+        // 이미지 경로 설정 (준비 화면의 이미지 소스 사용)
         document.getElementById('my-battle-img').src = document.getElementById('ready-my-img').src;
         document.getElementById('enemy-pet-img').src = document.getElementById('ready-enemy-img').src;
 
@@ -990,10 +997,11 @@
             const el = document.createElement('div');
             el.className = "bg-white p-3 rounded-xl shadow border border-indigo-100 flex flex-col items-center";
             // 번호가 있으면 그에 맞는 이미지, 없으면 기본값
-            const imgId = friend.number ? ((friend.number % 5) + 1) : 2;
+            const imgNum = friend.number ? ((friend.number % 5) + 1) : 2;
+            const imgId = imgNum.toString().padStart(2, '0'); // 두 자리 ID로 변환
 
             el.innerHTML = `
-                    <img src="./png/pet_${imgId}.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='60px';" class="w-16 h-16 object-contain mb-2">
+                    <img src="./png/${imgId}.png" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png'; this.style.width='60px';" class="w-16 h-16 object-contain mb-2">
                     <div class="font-bold text-indigo-900">${friend.name}</div>
                     <div class="text-sm text-gray-500">Lv.${friend.level}</div>
                 `;
